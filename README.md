@@ -8,4 +8,4 @@ Version: **0.8**
 ![GitHub top language](https://img.shields.io/github/languages/top/GoodVaib/Drop-it-or-Die)
 ![GitHub](https://img.shields.io/github/license/GoodVaib/Drop-it-or-Die)
 ![GitHub Repo stars](https://img.shields.io/github/stars/GoodVaib/Drop-it-or-Die)
-<!-- ![GitHub issues](https://img.shields.io/github/issues/GoodVaib/Drop-it-or-Die) -->
+<!-- <![GitHub issues](https://img.shields.io/github/issues/GoodVaib/Drop-it-or-Die) -->
