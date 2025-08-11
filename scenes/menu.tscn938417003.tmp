@@ -1,0 +1,533 @@
+[gd_scene load_steps=25 format=3 uid="uid://dvks64atfmisr"]
+
+[ext_resource type="Texture2D" uid="uid://b3jwcmvrfg4r2" path="res://textures/menu/background_menu.jpg" id="1_1vnfm"]
+[ext_resource type="Script" uid="uid://c6owp8d4srfkn" path="res://scripts/menu.gd" id="1_hw7j2"]
+[ext_resource type="Script" uid="uid://upyc3swik5kl" path="res://scripts/menu_buttons.gd" id="2_l0qbo"]
+[ext_resource type="Texture2D" uid="uid://1o8gs8kv3l3v" path="res://textures/menu/telegram.webp" id="3_av50f"]
+[ext_resource type="Texture2D" uid="uid://duolaeb30s46s" path="res://textures/menu/countries/USA 32-16.png" id="4_8200r"]
+[ext_resource type="Texture2D" uid="uid://bq85hasj3xqk6" path="res://textures/menu/countries/RUS 32-16.png" id="5_eq3ik"]
+[ext_resource type="Script" uid="uid://b0vb46bykn5pa" path="res://scripts/line_edit_name.gd" id="6_13sgg"]
+[ext_resource type="PackedScene" uid="uid://dgygkbtm0burn" path="res://addons/quiver_leaderboards/leaderboard_ui.tscn" id="6_ychbm"]
+
+[sub_resource type="Gradient" id="Gradient_s3k0x"]
+colors = PackedColorArray(0.644131, 0.513172, 0.266333, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_vnyfj"]
+gradient = SubResource("Gradient_s3k0x")
+fill_from = Vector2(1, 1)
+fill_to = Vector2(0, 0)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2ochm"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_f0a88"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vgdqx"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h8uc1"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yfcpa"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xusp4"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_itjmx"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tnds6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ypeos"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_emh6c"]
+
+[sub_resource type="Animation" id="Animation_tb25j"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("White:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_dceal"]
+resource_name = "White 2"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("White:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_vse7t"]
+resource_name = "white"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("White:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_6q547"]
+_data = {
+&"RESET": SubResource("Animation_tb25j"),
+&"White 2": SubResource("Animation_dceal"),
+&"white": SubResource("Animation_vse7t")
+}
+
+[node name="menu" type="Node2D"]
+script = ExtResource("1_hw7j2")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+script = ExtResource("2_l0qbo")
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_1vnfm")
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_vnyfj")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -65.5
+offset_top = -63.5
+offset_right = 65.5
+offset_bottom = 63.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Drop it or die" type="Label" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 22
+text = "Drop it or die"
+
+[node name="menu" type="Button" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 22
+theme_override_styles/focus = SubResource("StyleBoxEmpty_2ochm")
+text = "Menu"
+
+[node name="quit" type="Button" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 22
+theme_override_styles/focus = SubResource("StyleBoxEmpty_f0a88")
+text = "Quit"
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/CenterContainer"]
+custom_minimum_size = Vector2(268.725, 330.8)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/CenterContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="menu" type="Label" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 27
+text = "Menu"
+
+[node name="settings_text" type="Label" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 27
+text = "Settings"
+
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="single" type="Button" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 27
+theme_override_styles/focus = SubResource("StyleBoxEmpty_vgdqx")
+text = "Singleplayer"
+
+[node name="HSeparator2" type="HSeparator" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(247.355, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Leaderboard" type="Button" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 27
+theme_override_styles/focus = SubResource("StyleBoxEmpty_h8uc1")
+text = "Leaderboard"
+
+[node name="HSeparator3" type="HSeparator" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="statistics" type="Button" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 27
+theme_override_styles/focus = SubResource("StyleBoxEmpty_yfcpa")
+text = "Statistics
+"
+
+[node name="HSeparator4" type="HSeparator" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(225.97, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Settings" type="Button" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 27
+theme_override_styles/focus = SubResource("StyleBoxEmpty_yfcpa")
+text = "Settings"
+
+[node name="matches_played" type="Label" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 25
+text = "matches played: "
+
+[node name="matches_wins" type="Label" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 25
+text = "matches wins: "
+
+[node name="matches_loses" type="Label" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 25
+text = "matches loses: "
+
+[node name="settings_lang_HBoxCont" type="HBoxContainer" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Language" type="Label" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/settings_lang_HBoxCont"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Language:"
+
+[node name="OptionLanguage" type="OptionButton" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/settings_lang_HBoxCont"]
+layout_mode = 2
+theme_override_constants/icon_max_width = 36
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_xusp4")
+theme_override_constants/arrow_margin = 8
+selected = 0
+item_count = 2
+popup/item_0/text = "eng"
+popup/item_0/icon = ExtResource("4_8200r")
+popup/item_0/id = 0
+popup/item_1/text = "rus"
+popup/item_1/icon = ExtResource("5_eq3ik")
+popup/item_1/id = 1
+
+[node name="settings_fullscreen_HBoxCont" type="HBoxContainer" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="FullScreen_CheckButton" type="CheckButton" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/settings_fullscreen_HBoxCont"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 25
+theme_override_styles/focus = SubResource("StyleBoxEmpty_itjmx")
+text = "FullScreen:"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+
+[node name="back_menu" type="Button" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer2"]
+visible = false
+custom_minimum_size = Vector2(74, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 27
+theme_override_styles/focus = SubResource("StyleBoxEmpty_yfcpa")
+text = "Back"
+
+[node name="back" type="Button" parent="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer2"]
+custom_minimum_size = Vector2(74, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 27
+theme_override_styles/focus = SubResource("StyleBoxEmpty_yfcpa")
+text = "Back"
+
+[node name="Start_settings" type="CenterContainer" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Start_settings"]
+custom_minimum_size = Vector2(516.065, 330.8)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Start_settings/PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="text" type="Label" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 27
+text = "Starting settings"
+
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(133.815, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 22
+theme_override_styles/focus = SubResource("StyleBoxEmpty_tnds6")
+placeholder_text = "Name Here"
+max_length = 15
+expand_to_text_length = true
+drag_and_drop_selection_enabled = false
+script = ExtResource("6_13sgg")
+
+[node name="SaveName" type="Button" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 22
+theme_override_styles/focus = SubResource("StyleBoxEmpty_h8uc1")
+text = "Save name"
+
+[node name="HSeparator2" type="HSeparator" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(247.355, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="HSeparator3" type="HSeparator" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="settings_lang_HBoxCont" type="HBoxContainer" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Language" type="Label" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer/settings_lang_HBoxCont"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Language:"
+
+[node name="OptionLanguage" type="OptionButton" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer/settings_lang_HBoxCont"]
+layout_mode = 2
+theme_override_constants/icon_max_width = 36
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_xusp4")
+theme_override_constants/arrow_margin = 8
+selected = 0
+item_count = 2
+popup/item_0/text = "eng"
+popup/item_0/icon = ExtResource("4_8200r")
+popup/item_0/id = 0
+popup/item_1/text = "rus"
+popup/item_1/icon = ExtResource("5_eq3ik")
+popup/item_1/id = 1
+
+[node name="settings_fullscreen_HBoxCont" type="HBoxContainer" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="FullScreen_CheckButton" type="CheckButton" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer/settings_fullscreen_HBoxCont"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 25
+theme_override_styles/focus = SubResource("StyleBoxEmpty_itjmx")
+text = "FullScreen:"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+
+[node name="next" type="Button" parent="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer2"]
+custom_minimum_size = Vector2(74, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 27
+theme_override_styles/focus = SubResource("StyleBoxEmpty_yfcpa")
+text = "Next"
+
+[node name="LeaderboardUI" parent="CanvasLayer" instance=ExtResource("6_ychbm")]
+visible = false
+offset_left = 171.0
+offset_top = 85.0
+offset_right = -169.0
+offset_bottom = -85.0
+pivot_offset = Vector2(342, 171)
+leaderboard_id = "leaderboard-for-drop-test-Bn5j"
+
+[node name="Close" type="Button" parent="CanvasLayer/LeaderboardUI"]
+layout_mode = 2
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 72.0
+offset_bottom = 41.0
+theme_override_font_sizes/font_size = 22
+text = "Close"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/LeaderboardUI"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = -46.0
+offset_right = 174.0
+offset_bottom = -6.0
+grow_vertical = 0
+
+[node name="Label" type="Label" parent="CanvasLayer/LeaderboardUI/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "You're nickname: "
+
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/LeaderboardUI/HBoxContainer"]
+custom_minimum_size = Vector2(75.13, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ypeos")
+placeholder_text = "Name"
+max_length = 15
+expand_to_text_length = true
+drag_and_drop_selection_enabled = false
+
+[node name="gray" type="ColorRect" parent="CanvasLayer"]
+visible = false
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 9.0
+offset_top = -60.0
+offset_right = 121.0
+offset_bottom = -15.0
+grow_vertical = 0
+color = Color(0.329412, 0.329412, 0.329412, 0.698039)
+
+[node name="telegram" type="Button" parent="CanvasLayer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 13.0
+offset_top = -42.0
+offset_right = 123.0
+offset_bottom = -14.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/focus = SubResource("StyleBoxEmpty_emh6c")
+text = "Telegram:"
+flat = true
+alignment = 0
+
+[node name="Telegram" type="Sprite2D" parent="CanvasLayer/telegram"]
+position = Vector2(94, 16)
+scale = Vector2(0.00952149, 0.00952149)
+texture = ExtResource("3_av50f")
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 17.0
+offset_top = -63.0
+offset_right = 74.0
+offset_bottom = -43.0
+grow_vertical = 0
+text = "Ver: 0.7 (Beta)"
+vertical_alignment = 1
+
+[node name="White" type="ColorRect" parent="CanvasLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer"]
+libraries = {
+&"": SubResource("AnimationLibrary_6q547")
+}
+autoplay = "white"
+
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/menu" to="CanvasLayer" method="_on_start_game_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/quit" to="CanvasLayer" method="_on_quit_pressed"]
+[connection signal="pressed" from="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/single" to="CanvasLayer" method="_on_single_pressed"]
+[connection signal="pressed" from="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/Leaderboard" to="CanvasLayer" method="_on_leaderboard_pressed"]
+[connection signal="pressed" from="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/statistics" to="CanvasLayer" method="_on_statistics_pressed"]
+[connection signal="pressed" from="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/Settings" to="CanvasLayer" method="_on_settings_pressed"]
+[connection signal="item_selected" from="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/settings_lang_HBoxCont/OptionLanguage" to="CanvasLayer" method="_on_option_language_item_selected"]
+[connection signal="toggled" from="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/settings_fullscreen_HBoxCont/FullScreen_CheckButton" to="CanvasLayer" method="_on_check_button_toggled"]
+[connection signal="pressed" from="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer2/back_menu" to="CanvasLayer" method="_on_back_menu_pressed"]
+[connection signal="pressed" from="CanvasLayer/CenterContainer/PanelContainer/MarginContainer/VBoxContainer2/back" to="CanvasLayer" method="_on_back_pressed"]
+[connection signal="pressed" from="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer/SaveName" to="." method="_on_save_name_pressed"]
+[connection signal="item_selected" from="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer/settings_lang_HBoxCont/OptionLanguage" to="CanvasLayer" method="_on_option_language_item_selected"]
+[connection signal="toggled" from="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer/settings_fullscreen_HBoxCont/FullScreen_CheckButton" to="CanvasLayer" method="_on_check_button_toggled"]
+[connection signal="pressed" from="CanvasLayer/Start_settings/PanelContainer/MarginContainer/VBoxContainer2/next" to="CanvasLayer" method="_on_next_pressed"]
+[connection signal="pressed" from="CanvasLayer/LeaderboardUI/Close" to="CanvasLayer" method="_on_close_pressed"]
+[connection signal="pressed" from="CanvasLayer/telegram" to="CanvasLayer" method="_on_telegram_pressed"]

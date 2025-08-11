@@ -1,0 +1,35 @@
+[remap]
+
+importer="font_data_dynamic"
+type="FontFile"
+uid="uid://drfy21dsc7xpq"
+path="res://.godot/imported/Arista Pro Fat trial.ttf-c5fac4b1b4d83177f635190abf223923.fontdata"
+
+[deps]
+
+source_file="res://fonts/Arista Pro Fat trial.ttf"
+dest_files=["res://.godot/imported/Arista Pro Fat trial.ttf-c5fac4b1b4d83177f635190abf223923.fontdata"]
+
+[params]
+
+Rendering=null
+antialiasing=1
+generate_mipmaps=false
+disable_embedded_bitmaps=true
+multichannel_signed_distance_field=false
+msdf_pixel_range=8
+msdf_size=48
+allow_system_fallback=true
+force_autohinter=false
+hinting=1
+subpixel_positioning=1
+keep_rounding_remainders=true
+oversampling=0.0
+Fallbacks=null
+fallbacks=[]
+Compress=null
+compress=true
+preload=[]
+language_support={}
+script_support={}
+opentype_features={}

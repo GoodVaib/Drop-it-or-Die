@@ -1,0 +1,252 @@
+[gd_scene load_steps=16 format=3 uid="uid://blbouogsxiv22"]
+
+[ext_resource type="Script" uid="uid://dup3aj6cxnpc1" path="res://scripts/pause.gd" id="1_gqeqk"]
+[ext_resource type="Texture2D" uid="uid://duolaeb30s46s" path="res://textures/menu/countries/USA 32-16.png" id="2_x6f8q"]
+[ext_resource type="Texture2D" uid="uid://bq85hasj3xqk6" path="res://textures/menu/countries/RUS 32-16.png" id="3_xsfne"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_intr3"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k6ls2"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wjmsk"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gqqt2"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_u1weg"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qlxno"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_03wsj"]
+
+[sub_resource type="Animation" id="Animation_3w0sq"]
+length = 0.001
+
+[sub_resource type="Animation" id="Animation_bw4s8"]
+resource_name = "pause_in"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("background_pause:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0.450625, 1),
+"update": 0,
+"values": [Vector2(-305, 0), Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_q1hff"]
+resource_name = "pause_out"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("background_pause:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0.450625, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-305, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_58ls6"]
+resource_name = "white_in"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("white:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_n2814"]
+_data = {
+&"RESET": SubResource("Animation_3w0sq"),
+&"pause_in": SubResource("Animation_bw4s8"),
+&"pause_out": SubResource("Animation_q1hff"),
+&"white_in": SubResource("Animation_58ls6")
+}
+
+[node name="Pause" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gqeqk")
+
+[node name="pause_button" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+grow_vertical = 0
+
+[node name="Panel" type="Panel" parent="pause_button"]
+layout_mode = 0
+offset_left = 19.0
+offset_top = -47.0
+offset_right = 136.0
+offset_bottom = -9.0
+
+[node name="pause_text" type="Label" parent="pause_button"]
+layout_mode = 0
+offset_left = 45.0
+offset_top = -49.0
+offset_right = 140.0
+offset_bottom = -11.0
+theme_override_font_sizes/font_size = 31
+text = "Menu"
+
+[node name="Panel1" type="Panel" parent="pause_button"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = -40.0
+offset_right = 39.0
+offset_bottom = -18.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_intr3")
+
+[node name="Panel2" type="Panel" parent="pause_button"]
+layout_mode = 0
+offset_left = 27.0
+offset_top = -40.0
+offset_right = 31.0
+offset_bottom = -18.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_intr3")
+
+[node name="Button" type="Button" parent="pause_button"]
+layout_mode = 0
+offset_left = 17.0
+offset_top = -49.0
+offset_right = 138.0
+offset_bottom = -7.0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_k6ls2")
+flat = true
+
+[node name="background_pause" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -305.0
+offset_right = -1029.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.341176)
+
+[node name="Settings" type="VBoxContainer" parent="background_pause"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -87.0
+offset_right = 87.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="background_pause/Settings"]
+layout_mode = 2
+
+[node name="Language" type="Label" parent="background_pause/Settings/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Language: "
+
+[node name="OptionButton" type="OptionButton" parent="background_pause/Settings/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_wjmsk")
+theme_override_constants/arrow_margin = 9
+selected = 0
+item_count = 2
+popup/item_0/text = "eng"
+popup/item_0/icon = ExtResource("2_x6f8q")
+popup/item_0/id = 0
+popup/item_1/text = "rus"
+popup/item_1/icon = ExtResource("3_xsfne")
+popup/item_1/id = 1
+
+[node name="HSeparator" type="HSeparator" parent="background_pause/Settings"]
+layout_mode = 2
+
+[node name="Back" type="Button" parent="background_pause/Settings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gqqt2")
+text = "Back"
+
+[node name="Menu" type="VBoxContainer" parent="background_pause"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -52.0
+offset_top = -58.0
+offset_right = 52.0
+offset_bottom = 58.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Resume" type="Button" parent="background_pause/Menu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+theme_override_styles/focus = SubResource("StyleBoxEmpty_u1weg")
+text = "Resume"
+
+[node name="Settings" type="Button" parent="background_pause/Menu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+theme_override_styles/focus = SubResource("StyleBoxEmpty_qlxno")
+text = "Settings"
+
+[node name="Exit" type="Button" parent="background_pause/Menu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+theme_override_styles/focus = SubResource("StyleBoxEmpty_03wsj")
+text = "Exit"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_n2814")
+}
+
+[node name="AnimationPlayer 2" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_n2814")
+}
+
+[node name="white" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="pressed" from="pause_button/Button" to="." method="_on_button_pressed"]
+[connection signal="item_selected" from="background_pause/Settings/HBoxContainer/OptionButton" to="." method="_on_option_button_item_selected"]
+[connection signal="pressed" from="background_pause/Settings/Back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="background_pause/Menu/Resume" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="background_pause/Menu/Settings" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="background_pause/Menu/Exit" to="." method="_on_exit_pressed"]
