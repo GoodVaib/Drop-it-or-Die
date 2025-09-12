@@ -30,18 +30,18 @@ int main()
     score_text->setOrigin(0.5, 0.5);
     gui.add(score_text);
 
-    auto btn_gamno = Button::create();
-    btn_gamno->setText(L"Хуй");
-    btn_gamno->setPosition("50%", "50%");
-    btn_gamno->setOrigin(0.5, 0.5);
-    btn_gamno->onPress([&]{
+    auto btn_tap = Button::create();
+    btn_tap->setText(L"Click me!");
+    btn_tap->setPosition("50%", "50%");
+    btn_tap->setOrigin(0.5, 0.5);
+    btn_tap->onPress([&]{
         static long score = 0;
         score++;
         std::string text_label = "Score: ";
         text_label += std::to_string(score);
         score_text->setText(text_label);
     });
-    gui.add(btn_gamno);
+    gui.add(btn_tap);
     */
 
     while (window.isOpen())
