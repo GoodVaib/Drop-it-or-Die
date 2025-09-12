@@ -22,6 +22,7 @@ int main()
     RenderWindow window{VideoMode{ {800, 600} }, "Clicker"};
     Gui gui{window};
 
+    /*
     auto score_text = tgui::Label::create();
     score_text->setText("Score: 0");
     score_text->setPosition("50%", "40%");
@@ -41,6 +42,7 @@ int main()
         score_text->setText(text_label);
     });
     gui.add(btn_gamno);
+    */
 
     while (window.isOpen())
     {
