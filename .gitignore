@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# ingnore this folders on my repository:
+.build
+.vscode
