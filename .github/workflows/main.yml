@@ -23,9 +23,9 @@ jobs:
           ACTOR="${{ github.actor }}"
           REF_NAME="${{ github.ref_name }}"
           
-          # Экранирование специальных символов для MarkdownV2
+          # Функция для экранирования MarkdownV2
           escape_markdown() {
-            echo "$1" | sed -e 's/[_*\[\]()~`>#+\-=|{}\.!]/\\&/g'
+            echo "$1" | sed -e 's/[_*\[\]()~`>#+\-=|{}\.!]/\\&/g' -e 's/-/\\-/g'
           }
           
           ESCAPED_REPO=$(escape_markdown "$REPO_NAME")
@@ -148,13 +148,16 @@ jobs:
           if [ "$HTTP_CODE" = "200" ]; then
             echo "✅ Message sent successfully to topic 6"
           else
-            echo "❌ Failed to send message. Response: $BODY"
-            # Попробуем отправить без форматирования для диагностики
-            echo "Trying without markdown formatting..."
-            curl -s -X POST \
+            echo "❌ Failed to send with MarkdownV2, trying HTML format..."
+            # Попробуем с HTML форматированием
+            HTML_MESSAGE=$(echo "$MESSAGE" | sed -e 's/\\//g' -e 's/\*\([^*]*\)\*/<b>\1<\/b>/g' -e 's/\[\([^]]*\)](\([^)]*\))/<a href="\2">\1<\/a>/g' -e 's/\n/<br>/g')
+            ENCODED_HTML=$(echo -n "$HTML_MESSAGE" | jq -s -R -r @uri)
+            
+            curl -s -w "\nHTTP_CODE:%{http_code}" -X POST \
               "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
               -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
               -d "message_thread_id=6" \
-              -d "text=Test message from GitHub Actions" \
-              -d "parse_mode=HTML"
+              -d "text=$ENCODED_HTML" \
+              -d "parse_mode=HTML" \
+              -d "disable_web_page_preview=true"
           fi
