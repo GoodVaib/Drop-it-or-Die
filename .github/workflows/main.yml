@@ -73,10 +73,24 @@ jobs:
           
           echo "message=$MESSAGE" >> $GITHUB_OUTPUT
 
-      - name: Send Telegram notification
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          message_thread_id: $6
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: ${{ steps.prepare_message.outputs.message }}
+      - name: Send Telegram notification via API
+        run: |
+          # URL-encode сообщение
+          MESSAGE_URL_ENCODED=$(echo "${{ steps.prepare_message.outputs.message }}" | jq -s -R -r @uri)
+          
+          # Отправка сообщения в тему
+          curl -s -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d "message_thread_id=6" \
+            -d "text=$MESSAGE_URL_ENCODED" \
+            -d "parse_mode=HTML"
+          
+          # Проверка статуса отправки
+          if [ $? -eq 0 ]; then
+            echo "Message sent successfully to topic 6"
+          else
+            echo "Failed to send message"
+            exit 1
+          fi
