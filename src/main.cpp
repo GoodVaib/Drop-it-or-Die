@@ -22,7 +22,7 @@ int main()
     RenderWindow window{VideoMode{ {800, 600} }, "Drop it or Die"};
     Gui gui{window};
 
-
+ 
     auto score_text = tgui::Label::create();
     score_text->setText("Score: 0");
     score_text->setPosition("50%", "40%");
