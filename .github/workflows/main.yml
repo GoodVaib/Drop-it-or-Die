@@ -21,90 +21,103 @@ jobs:
           REPO_NAME="${{ github.repository }}"
           REPO_URL="https://github.com/${{ github.repository }}"
           ACTOR="${{ github.actor }}"
-          ACTOR_URL="https://github.com/${{ github.actor }}"
           REF_NAME="${{ github.ref_name }}"
+          
+          # Экранирование специальных символов для MarkdownV2
+          escape_markdown() {
+            echo "$1" | sed -e 's/[_*\[\]()~`>#+\-=|{}\.!]/\\&/g'
+          }
+          
+          ESCAPED_REPO=$(escape_markdown "$REPO_NAME")
+          ESCAPED_REF=$(escape_markdown "$REF_NAME")
+          ESCAPED_ACTOR=$(escape_markdown "$ACTOR")
           
           # PUSH event
           if [ "$EVENT_TYPE" = "push" ]; then
             if [ -z "${{ github.event.head_commit.id }}" ]; then
               BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
-              MESSAGE="🗑️ Branch deleted: $BRANCH_REF"
+              ESCAPED_BRANCH=$(escape_markdown "$BRANCH_REF")
+              MESSAGE="🗑️ Branch deleted: $ESCAPED_BRANCH"
             else
-              COMMIT_MSG="${{ github.event.head_commit.message }}"
+              COMMIT_MSG=$(escape_markdown "${{ github.event.head_commit.message }}")
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.event.head_commit.id }}"
-              MESSAGE="📝 New commit in *${REPO_NAME//-/\\-}* : *${REF_NAME//-/\\-}*%0A%0A"
-              MESSAGE+="💬 ${COMMIT_MSG//-/\\-}%0A"
-              MESSAGE+="👤 by ${ACTOR//-/\\-}%0A"
-              MESSAGE+="🔗 [View commit]($COMMIT_URL)"
+              MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF*"
+              MESSAGE+="\n\n💬 $COMMIT_MSG"
+              MESSAGE+="\n👤 by $ESCAPED_ACTOR"
+              MESSAGE+="\n🔗 [View commit]($COMMIT_URL)"
             fi
           
           # CREATE event  
           elif [ "$EVENT_TYPE" = "create" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="🌿 Created branch: *${REF_NAME//-/\\-}*%0A"
-              MESSAGE+="👤 by ${ACTOR//-/\\-}"
+              MESSAGE="🌿 Created branch: *$ESCAPED_REF*"
+              MESSAGE+="\n👤 by $ESCAPED_ACTOR"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="🏷️ Created tag: *${REF_NAME//-/\\-}*%0A"
-              MESSAGE+="👤 by ${ACTOR//-/\\-}"
+              MESSAGE="🏷️ Created tag: *$ESCAPED_REF*"
+              MESSAGE+="\n👤 by $ESCAPED_ACTOR"
             fi
           
           # DELETE event
           elif [ "$EVENT_TYPE" = "delete" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="🗑️ Deleted branch: *${REF_NAME//-/\\-}*%0A"
-              MESSAGE+="👤 by ${ACTOR//-/\\-}"
+              MESSAGE="🗑️ Deleted branch: *$ESCAPED_REF*"
+              MESSAGE+="\n👤 by $ESCAPED_ACTOR"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="🗑️ Deleted tag: *${REF_NAME//-/\\-}*%0A"
-              MESSAGE+="👤 by ${ACTOR//-/\\-}"
+              MESSAGE="🗑️ Deleted tag: *$ESCAPED_REF*"
+              MESSAGE+="\n👤 by $ESCAPED_ACTOR"
             fi
           
           # PULL_REQUEST event
           elif [ "$EVENT_TYPE" = "pull_request" ]; then
             ACTION="${{ github.event.action }}"
-            PR_TITLE="${{ github.event.pull_request.title }}"
-            PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+            PR_TITLE=$(escape_markdown "${{ github.event.pull_request.title }}")
+            PR_AUTHOR=$(escape_markdown "${{ github.event.pull_request.user.login }}")
             PR_URL="${{ github.event.pull_request.html_url }}"
             PR_NUMBER="${{ github.event.pull_request.number }}"
             
             if [ "$ACTION" = "opened" ]; then
-              MESSAGE="🎯 New Pull Request #$PR_NUMBER%0A"
-              MESSAGE+="📌 *${PR_TITLE//-/\\-}*%0A"
-              MESSAGE+="👤 by ${PR_AUTHOR//-/\\-}%0A"
-              MESSAGE+="🔗 [View PR]($PR_URL)"
+              MESSAGE="🎯 New Pull Request #$PR_NUMBER"
+              MESSAGE+="\n📌 *$PR_TITLE*"
+              MESSAGE+="\n👤 by $PR_AUTHOR"
+              MESSAGE+="\n🔗 [View PR]($PR_URL)"
             elif [ "$ACTION" = "closed" ]; then
               if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                MESSAGE="✅ PR Merged #$PR_NUMBER%0A"
-                MESSAGE+="📌 *${PR_TITLE//-/\\-}*%0A"
-                MESSAGE+="👤 by ${PR_AUTHOR//-/\\-}"
+                MESSAGE="✅ PR Merged #$PR_NUMBER"
+                MESSAGE+="\n📌 *$PR_TITLE*"
+                MESSAGE+="\n👤 by $PR_AUTHOR"
               else
-                MESSAGE="❌ PR Closed #$PR_NUMBER%0A"
-                MESSAGE+="📌 *${PR_TITLE//-/\\-}*%0A"
-                MESSAGE+="👤 by ${PR_AUTHOR//-/\\-}"
+                MESSAGE="❌ PR Closed #$PR_NUMBER"
+                MESSAGE+="\n📌 *$PR_TITLE*"
+                MESSAGE+="\n👤 by $PR_AUTHOR"
               fi
             elif [ "$ACTION" = "reopened" ]; then
-              MESSAGE="🔄 PR Reopened #$PR_NUMBER%0A"
-              MESSAGE+="📌 *${PR_TITLE//-/\\-}*%0A"
-              MESSAGE+="👤 by ${PR_AUTHOR//-/\\-}%0A"
-              MESSAGE+="🔗 [View PR]($PR_URL)"
+              MESSAGE="🔄 PR Reopened #$PR_NUMBER"
+              MESSAGE+="\n📌 *$PR_TITLE*"
+              MESSAGE+="\n👤 by $PR_AUTHOR"
+              MESSAGE+="\n🔗 [View PR]($PR_URL)"
             fi
           
           # RELEASE event
           elif [ "$EVENT_TYPE" = "release" ]; then
-            RELEASE_NAME="${{ github.event.release.name }}"
-            TAG_NAME="${{ github.event.release.tag_name }}"
+            RELEASE_NAME=$(escape_markdown "${{ github.event.release.name }}")
+            TAG_NAME=$(escape_markdown "${{ github.event.release.tag_name }}")
             RELEASE_URL="${{ github.event.release.html_url }}"
-            MESSAGE="🎉 New Release%0A"
-            MESSAGE+="📦 *${RELEASE_NAME//-/\\-}* v${TAG_NAME//-/\\-}%0A"
-            MESSAGE+="👤 by ${ACTOR//-/\\-}%0A"
-            MESSAGE+="🔗 [View Release]($RELEASE_URL)"
+            MESSAGE="🎉 New Release"
+            MESSAGE+="\n📦 *$RELEASE_NAME* v$TAG_NAME"
+            MESSAGE+="\n👤 by $ESCAPED_ACTOR"
+            MESSAGE+="\n🔗 [View Release]($RELEASE_URL)"
           
           else
-            MESSAGE="📋 Event: ${EVENT_TYPE//-/\\-}%0A"
-            MESSAGE+="👤 by ${ACTOR//-/\\-}"
+            ESCAPED_EVENT=$(escape_markdown "$EVENT_TYPE")
+            MESSAGE="📋 Event: $ESCAPED_EVENT"
+            MESSAGE+="\n👤 by $ESCAPED_ACTOR"
           fi
           
           echo "message=$MESSAGE" >> $GITHUB_OUTPUT
           echo "Debug: Message prepared: $MESSAGE"
+
+      - name: Install jq for URL encoding
+        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Send Telegram notification via API
         run: |
@@ -112,12 +125,17 @@ jobs:
           
           echo "Debug: Final message: $MESSAGE"
           
+          # URL-encode сообщение
+          ENCODED_MESSAGE=$(echo -n "$MESSAGE" | jq -s -R -r @uri)
+          
+          echo "Debug: Encoded message: $ENCODED_MESSAGE"
+          
           # Отправка сообщения в тему с MarkdownV2
           RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d "message_thread_id=6" \
-            -d "text=$MESSAGE" \
+            -d "text=$ENCODED_MESSAGE" \
             -d "parse_mode=MarkdownV2")
           
           # Извлекаем HTTP код и тело ответа
@@ -131,5 +149,12 @@ jobs:
             echo "✅ Message sent successfully to topic 6"
           else
             echo "❌ Failed to send message. Response: $BODY"
-            # Не выходим с ошибкой, чтобы не ломать workflow
+            # Попробуем отправить без форматирования для диагностики
+            echo "Trying without markdown formatting..."
+            curl -s -X POST \
+              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+              -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+              -d "message_thread_id=6" \
+              -d "text=Test message from GitHub Actions" \
+              -d "parse_mode=HTML"
           fi
