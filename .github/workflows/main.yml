@@ -1,20 +1,104 @@
-name: Telegram Notification on Push
+name: Telegram Notifications
 
-on: [push] # Триггер - событие push в любую ветку
+on:
+  push:
+  pull_request:
+    types: [opened, closed, reopened]
+  release:
+    types: [published]
+  create: # Создание ветки или тега
+  delete: # Удаление ветки или тега
 
 jobs:
   notify:
     runs-on: ubuntu-latest
-
     steps:
+      - name: Prepare notification message
+        id: prepare_message
+        run: |
+          # Определяем тип события
+          EVENT_TYPE="${{ github.event_name }}"
+
+          # Обработка PUSH события
+          if [ "$EVENT_TYPE" = "push" ]; then
+            # Проверяем, был ли удалена ветка (коммитов в push нет)
+            if [ -z "${{ github.event.head_commit.id }}" ]; then
+              BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
+              MESSAGE="🗑️ Ветка удалена: $BRANCH_REF"
+            else
+              # Обычный push с коммитами
+              MESSAGE="📌 Новый push в репозиторий
+              📂 Репозиторий: ${{ github.repository }}
+              🌿 Ветка: ${{ github.ref_name }}
+              👤 Автор: ${{ github.actor }}
+              💬 Коммит: ${{ github.event.head_commit.message }}
+              🔗 Ссылка: ${{ github.event.head_commit.url }}"
+            fi
+
+          # Обработка создания ветки
+          elif [ "$EVENT_TYPE" = "create" ]; then
+            if [ "${{ github.ref_type }}" = "branch" ]; then
+              MESSAGE="🌿 Создана новая ветка: ${{ github.ref_name }}"
+            elif [ "${{ github.ref_type }}" = "tag" ]; then
+              MESSAGE="🏷️ Создан новый тег: ${{ github.ref_name }}"
+            fi
+
+          # Обработка удаления ветки
+          elif [ "$EVENT_TYPE" = "delete" ]; then
+            if [ "${{ github.ref_type }}" = "branch" ]; then
+              MESSAGE="🗑️ Удалена ветка: ${{ github.ref_name }}"
+            elif [ "${{ github.ref_type }}" = "tag" ]; then
+              MESSAGE="🗑️ Удален тег: ${{ github.ref_name }}"
+            fi
+
+          # Обработка PULL REQUEST
+          elif [ "$EVENT_TYPE" = "pull_request" ]; then
+            ACTION="${{ github.event.action }}"
+            PR_TITLE="${{ github.event.pull_request.title }}"
+            PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+            PR_URL="${{ github.event.pull_request.html_url }}"
+            
+            case $ACTION in
+              "opened")
+                MESSAGE="🆕 Новый Pull Request: $PR_TITLE
+                👤 Автор: $PR_AUTHOR
+                🔗 Ссылка: $PR_URL" ;;
+              "closed")
+                if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+                  MESSAGE="✅ Pull Request принят: $PR_TITLE
+                  👤 Автор: $PR_AUTHOR
+                  🔗 Ссылка: $PR_URL"
+                else
+                  MESSAGE="❌ Pull Request закрыт: $PR_TITLE
+                  👤 Автор: $PR_AUTHOR
+                  🔗 Ссылка: $PR_URL"
+                fi ;;
+              "reopened")
+                MESSAGE="🔄 Pull Request reopened: $PR_TITLE
+                👤 Автор: $PR_AUTHOR
+                🔗 Ссылка: $PR_URL" ;;
+            esac
+
+          # Обработка RELEASE
+          elif [ "$EVENT_TYPE" = "release" ]; then
+            MESSAGE="🎉 Новый релиз: ${{ github.event.release.name }}
+            🏷️ Версия: ${{ github.event.release.tag_name }}
+            📝 Описание: ${{ github.event.release.body }}
+            🔗 Ссылка: ${{ github.event.release.html_url }}"
+
+          else
+            MESSAGE="ℹ️ Событие: $EVENT_TYPE"
+          fi
+
+          # Убираем лишние отступы в многострочном тексте
+          MESSAGE=$(echo "$MESSAGE" | sed 's/^[ \t]*//')
+          
+          # Устанавливаем output для использования в следующем шаге
+          echo "message=$MESSAGE" >> $GITHUB_OUTPUT
+
       - name: Send Telegram notification
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            + Новый push в репозиторий!
-            Репозиторий: ${{ github.repository }}:${{ github.ref }}
-            Автор: ${{ github.actor }}
-            Коммит: ${{ github.event.head_commit.message }}
-            Ссылка: ${{ github.event.head_commit.url }}
+          message: ${{ steps.prepare_message.outputs.message }}
