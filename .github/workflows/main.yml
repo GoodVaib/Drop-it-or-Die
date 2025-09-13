@@ -25,7 +25,8 @@ jobs:
               BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
               MESSAGE="Branch deleted: $BRANCH_REF"
             else
-              MESSAGE="+ New commit: ${{ github.repository }}:${{ github.ref_name }} by ${{ github.actor }}"
+              MESSAGE="> *Pushed by*: [${{ github.actor }}](https://github.com/${{ github.actor }})
+              ${{ github.repository }}:${{ github.ref_name }}"
             fi
           
           # CREATE event  
@@ -52,15 +53,15 @@ jobs:
             PR_URL="${{ github.event.pull_request.html_url }}"
             
             if [ "$ACTION" = "opened" ]; then
-              MESSAGE="New PR: $PR_TITLE by $PR_AUTHOR"
+              MESSAGE="New Pull request: $PR_TITLE by $PR_AUTHOR"
             elif [ "$ACTION" = "closed" ]; then
               if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                MESSAGE="PR merged: $PR_TITLE"
+                MESSAGE="Pull request merged: $PR_TITLE"
               else
-                MESSAGE="PR closed: $PR_TITLE"
+                MESSAGE="Pull request closed: $PR_TITLE"
               fi
             elif [ "$ACTION" = "reopened" ]; then
-              MESSAGE="PR reopened: $PR_TITLE"
+              MESSAGE="Pull request reopened: $PR_TITLE"
             fi
           
           # RELEASE event
