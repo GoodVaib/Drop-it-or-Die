@@ -28,34 +28,34 @@ jobs:
           if [ "$EVENT_TYPE" = "push" ]; then
             if [ -z "${{ github.event.head_commit.id }}" ]; then
               BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
-              MESSAGE="🗑️ <b>Branch deleted:</b> <code>$BRANCH_REF</code>"
+              MESSAGE="🗑️ Branch deleted: $BRANCH_REF"
             else
               COMMIT_MSG="${{ github.event.head_commit.message }}"
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.event.head_commit.id }}"
-              MESSAGE="📝 <b>New commit</b> in <a href=\"$REPO_URL\">$REPO_NAME</a>:<b>$REF_NAME</b>\n\n"
-              MESSAGE+="💬 <i>$COMMIT_MSG</i>\n"
-              MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>\n"
-              MESSAGE+="🔗 <a href=\"$COMMIT_URL\">View commit</a>"
+              MESSAGE="📝 New commit in $REPO_NAME:$REF_NAME\n\n"
+              MESSAGE+="💬 $COMMIT_MSG\n"
+              MESSAGE+="👤 by $ACTOR\n"
+              MESSAGE+="🔗 $COMMIT_URL"
             fi
           
           # CREATE event  
           elif [ "$EVENT_TYPE" = "create" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="🌿 <b>Created branch:</b> <code>$REF_NAME</code>\n"
-              MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>"
+              MESSAGE="🌿 Created branch: $REF_NAME\n"
+              MESSAGE+="👤 by $ACTOR"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="🏷️ <b>Created tag:</b> <code>$REF_NAME</code>\n"
-              MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>"
+              MESSAGE="🏷️ Created tag: $REF_NAME\n"
+              MESSAGE+="👤 by $ACTOR"
             fi
           
           # DELETE event
           elif [ "$EVENT_TYPE" = "delete" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="🗑️ <b>Deleted branch:</b> <code>$REF_NAME</code>\n"
-              MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>"
+              MESSAGE="🗑️ Deleted branch: $REF_NAME\n"
+              MESSAGE+="👤 by $ACTOR"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="🗑️ <b>Deleted tag:</b> <code>$REF_NAME</code>\n"
-              MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>"
+              MESSAGE="🗑️ Deleted tag: $REF_NAME\n"
+              MESSAGE+="👤 by $ACTOR"
             fi
           
           # PULL_REQUEST event
@@ -63,30 +63,29 @@ jobs:
             ACTION="${{ github.event.action }}"
             PR_TITLE="${{ github.event.pull_request.title }}"
             PR_AUTHOR="${{ github.event.pull_request.user.login }}"
-            PR_AUTHOR_URL="https://github.com/${{ github.event.pull_request.user.login }}"
             PR_URL="${{ github.event.pull_request.html_url }}"
             PR_NUMBER="${{ github.event.pull_request.number }}"
             
             if [ "$ACTION" = "opened" ]; then
-              MESSAGE="🎯 <b>New Pull Request</b> #$PR_NUMBER\n"
-              MESSAGE+="📌 <b>$PR_TITLE</b>\n"
-              MESSAGE+="👤 by <a href=\"$PR_AUTHOR_URL\">$PR_AUTHOR</a>\n"
-              MESSAGE+="🔗 <a href=\"$PR_URL\">View PR</a>"
+              MESSAGE="🎯 New Pull Request #$PR_NUMBER\n"
+              MESSAGE+="📌 $PR_TITLE\n"
+              MESSAGE+="👤 by $PR_AUTHOR\n"
+              MESSAGE+="🔗 $PR_URL"
             elif [ "$ACTION" = "closed" ]; then
               if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                MESSAGE="✅ <b>PR Merged</b> #$PR_NUMBER\n"
-                MESSAGE+="📌 <b>$PR_TITLE</b>\n"
-                MESSAGE+="👤 by <a href=\"$PR_AUTHOR_URL\">$PR_AUTHOR</a>"
+                MESSAGE="✅ PR Merged #$PR_NUMBER\n"
+                MESSAGE+="📌 $PR_TITLE\n"
+                MESSAGE+="👤 by $PR_AUTHOR"
               else
-                MESSAGE="❌ <b>PR Closed</b> #$PR_NUMBER\n"
-                MESSAGE+="📌 <b>$PR_TITLE</b>\n"
-                MESSAGE+="👤 by <a href=\"$PR_AUTHOR_URL\">$PR_AUTHOR</a>"
+                MESSAGE="❌ PR Closed #$PR_NUMBER\n"
+                MESSAGE+="📌 $PR_TITLE\n"
+                MESSAGE+="👤 by $PR_AUTHOR"
               fi
             elif [ "$ACTION" = "reopened" ]; then
-              MESSAGE="🔄 <b>PR Reopened</b> #$PR_NUMBER\n"
-              MESSAGE+="📌 <b>$PR_TITLE</b>\n"
-              MESSAGE+="👤 by <a href=\"$PR_AUTHOR_URL\">$PR_AUTHOR</a>\n"
-              MESSAGE+="🔗 <a href=\"$PR_URL\">View PR</a>"
+              MESSAGE="🔄 PR Reopened #$PR_NUMBER\n"
+              MESSAGE+="📌 $PR_TITLE\n"
+              MESSAGE+="👤 by $PR_AUTHOR\n"
+              MESSAGE+="🔗 $PR_URL"
             fi
           
           # RELEASE event
@@ -94,34 +93,47 @@ jobs:
             RELEASE_NAME="${{ github.event.release.name }}"
             TAG_NAME="${{ github.event.release.tag_name }}"
             RELEASE_URL="${{ github.event.release.html_url }}"
-            MESSAGE="🎉 <b>New Release</b>\n"
-            MESSAGE+="📦 <b>$RELEASE_NAME</b> v$TAG_NAME\n"
-            MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>\n"
-            MESSAGE+="🔗 <a href=\"$RELEASE_URL\">View Release</a>"
+            MESSAGE="🎉 New Release\n"
+            MESSAGE+="📦 $RELEASE_NAME v$TAG_NAME\n"
+            MESSAGE+="👤 by $ACTOR\n"
+            MESSAGE+="🔗 $RELEASE_URL"
           
           else
-            MESSAGE="📋 <b>Event:</b> $EVENT_TYPE\n"
-            MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>"
+            MESSAGE="📋 Event: $EVENT_TYPE\n"
+            MESSAGE+="👤 by $ACTOR"
           fi
           
           echo "message=$MESSAGE" >> $GITHUB_OUTPUT
+          echo "Debug: Message prepared: $MESSAGE"
+
+      - name: Install jq for URL encoding
+        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Send Telegram notification via API
         run: |
-          # Отправка сообщения в тему с HTML форматированием
-          curl -s -X POST \
+          # URL-encode сообщение
+          MESSAGE="${{ steps.prepare_message.outputs.message }}"
+          ENCODED_MESSAGE=$(echo -n "$MESSAGE" | jq -s -R -r @uri)
+          
+          echo "Debug: Encoded message: $ENCODED_MESSAGE"
+          
+          # Отправка сообщения в тему
+          RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-            -H "Content-Type: application/x-www-form-urlencoded" \
             -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d "message_thread_id=6" \
-            -d "text=${{ steps.prepare_message.outputs.message }}" \
-            -d "parse_mode=HTML" \
-            -d "disable_web_page_preview=true"
+            -d "text=$ENCODED_MESSAGE")
           
-          # Проверка статуса отправки
-          if [ $? -eq 0 ]; then
-            echo "Message sent successfully to topic 6"
+          # Извлекаем HTTP код и тело ответа
+          HTTP_CODE=$(echo "$RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
+          BODY=$(echo "$RESPONSE" | sed '/HTTP_CODE:/d')
+          
+          echo "Debug: HTTP Code: $HTTP_CODE"
+          echo "Debug: Response: $BODY"
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Message sent successfully to topic 6"
           else
-            echo "Failed to send message"
+            echo "❌ Failed to send message. Response: $BODY"
             exit 1
           fi
