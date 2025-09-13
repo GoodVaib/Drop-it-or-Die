@@ -1,17 +1,20 @@
-name: Java CI
+name: Telegram Notification on Push
 
-on: [push]
+on: [push] # Триггер - событие push в любую ветку
 
 jobs:
-  build:
-
+  notify:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Send notification to telegram
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_CHAT_ID }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        args: Repository {{ repo }}. The ${{ github.event_name }} event triggered a new build.
+      - name: Send Telegram notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            + Новый push в репозиторий!
+            Репозиторий: ${{ github.repository }}:${{ github.ref }}
+            Автор: ${{ github.actor }}
+            Коммит: ${{ github.event.head_commit.message }}
+            Ссылка: ${{ github.event.head_commit.url }}
