@@ -23,107 +23,83 @@ jobs:
           ACTOR="${{ github.actor }}"
           REF_NAME="${{ github.ref_name }}"
           
-          # Функция для экранирования MarkdownV2
-          escape_markdown() {
-            echo "$1" | sed -e 's/[_*\[\]()~`>#+\-=|{}\.!]/\\&/g' -e 's/-/\\-/g'
-          }
-          
-          # Функция для создания MarkdownV2 ссылок с экранированием
-          create_link() {
-            local text=$(escape_markdown "$1")
-            local url="$2"
-            echo "[$text]($url)"
-          }
-          
-          ESCAPED_REPO=$(escape_markdown "$REPO_NAME")
-          ESCAPED_REF=$(escape_markdown "$REF_NAME")
-          ESCAPED_ACTOR=$(escape_markdown "$ACTOR")
-          
           # PUSH event
           if [ "$EVENT_TYPE" = "push" ]; then
             if [ -z "${{ github.event.head_commit.id }}" ]; then
               BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
-              ESCAPED_BRANCH=$(escape_markdown "$BRANCH_REF")
-              MESSAGE="🗑️ Branch deleted: $ESCAPED_BRANCH"
+              MESSAGE="🗑️ <b>Branch deleted:</b> <code>$BRANCH_REF</code>"
             else
-              COMMIT_MSG=$(escape_markdown "${{ github.event.head_commit.message }}")
+              COMMIT_MSG="${{ github.event.head_commit.message }}"
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.event.head_commit.id }}"
-              VIEW_COMMIT_LINK=$(create_link "View commit" "$COMMIT_URL")
-              
-              MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF*%0A%0A"
-              MESSAGE+="💬 $COMMIT_MSG%0A"
-              MESSAGE+="👤 by $ESCAPED_ACTOR%0A"
-              MESSAGE+="🔗 $VIEW_COMMIT_LINK"
+              MESSAGE="📝 <b>New commit</b> in <b>$REPO_NAME</b>:<b>$REF_NAME</b>\n\n"
+              MESSAGE+="💬 <i>$COMMIT_MSG</i>\n"
+              MESSAGE+="👤 by <b>$ACTOR</b>\n"
+              MESSAGE+="🔗 <a href=\"$COMMIT_URL\">View commit</a>"
             fi
           
           # CREATE event  
           elif [ "$EVENT_TYPE" = "create" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="🌿 Created branch: *$ESCAPED_REF*%0A"
-              MESSAGE+="👤 by $ESCAPED_ACTOR"
+              MESSAGE="🌿 <b>Created branch:</b> <code>$REF_NAME</code>\n"
+              MESSAGE+="👤 by <b>$ACTOR</b>"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="🏷️ Created tag: *$ESCAPED_REF*%0A"
-              MESSAGE+="👤 by $ESCAPED_ACTOR"
+              MESSAGE="🏷️ <b>Created tag:</b> <code>$REF_NAME</code>\n"
+              MESSAGE+="👤 by <b>$ACTOR</b>"
             fi
           
           # DELETE event
           elif [ "$EVENT_TYPE" = "delete" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="🗑️ Deleted branch: *$ESCAPED_REF*%0A"
-              MESSAGE+="👤 by $ESCAPED_ACTOR"
+              MESSAGE="🗑️ <b>Deleted branch:</b> <code>$REF_NAME</code>\n"
+              MESSAGE+="👤 by <b>$ACTOR</b>"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="🗑️ Deleted tag: *$ESCAPED_REF*%0A"
-              MESSAGE+="👤 by $ESCAPED_ACTOR"
+              MESSAGE="🗑️ <b>Deleted tag:</b> <code>$REF_NAME</code>\n"
+              MESSAGE+="👤 by <b>$ACTOR</b>"
             fi
           
           # PULL_REQUEST event
           elif [ "$EVENT_TYPE" = "pull_request" ]; then
             ACTION="${{ github.event.action }}"
-            PR_TITLE=$(escape_markdown "${{ github.event.pull_request.title }}")
-            PR_AUTHOR=$(escape_markdown "${{ github.event.pull_request.user.login }}")
+            PR_TITLE="${{ github.event.pull_request.title }}"
+            PR_AUTHOR="${{ github.event.pull_request.user.login }}"
             PR_URL="${{ github.event.pull_request.html_url }}"
             PR_NUMBER="${{ github.event.pull_request.number }}"
             
-            VIEW_PR_LINK=$(create_link "View PR" "$PR_URL")
-            
             if [ "$ACTION" = "opened" ]; then
-              MESSAGE="🎯 New Pull Request #$PR_NUMBER%0A"
-              MESSAGE+="📌 *$PR_TITLE*%0A"
-              MESSAGE+="👤 by $PR_AUTHOR%0A"
-              MESSAGE+="🔗 $VIEW_PR_LINK"
+              MESSAGE="🎯 <b>New Pull Request</b> #$PR_NUMBER\n"
+              MESSAGE+="📌 <b>$PR_TITLE</b>\n"
+              MESSAGE+="👤 by <b>$PR_AUTHOR</b>\n"
+              MESSAGE+="🔗 <a href=\"$PR_URL\">View PR</a>"
             elif [ "$ACTION" = "closed" ]; then
               if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                MESSAGE="✅ PR Merged #$PR_NUMBER%0A"
-                MESSAGE+="📌 *$PR_TITLE*%0A"
-                MESSAGE+="👤 by $PR_AUTHOR"
+                MESSAGE="✅ <b>PR Merged</b> #$PR_NUMBER\n"
+                MESSAGE+="📌 <b>$PR_TITLE</b>\n"
+                MESSAGE+="👤 by <b>$PR_AUTHOR</b>"
               else
-                MESSAGE="❌ PR Closed #$PR_NUMBER%0A"
-                MESSAGE+="📌 *$PR_TITLE*%0A"
-                MESSAGE+="👤 by $PR_AUTHOR"
+                MESSAGE="❌ <b>PR Closed</b> #$PR_NUMBER\n"
+                MESSAGE+="📌 <b>$PR_TITLE</b>\n"
+                MESSAGE+="👤 by <b>$PR_AUTHOR</b>"
               fi
             elif [ "$ACTION" = "reopened" ]; then
-              MESSAGE="🔄 PR Reopened #$PR_NUMBER%0A"
-              MESSAGE+="📌 *$PR_TITLE*%0A"
-              MESSAGE+="👤 by $PR_AUTHOR%0A"
-              MESSAGE+="🔗 $VIEW_PR_LINK"
+              MESSAGE="🔄 <b>PR Reopened</b> #$PR_NUMBER\n"
+              MESSAGE+="📌 <b>$PR_TITLE</b>\n"
+              MESSAGE+="👤 by <b>$PR_AUTHOR</b>\n"
+              MESSAGE+="🔗 <a href=\"$PR_URL\">View PR</a>"
             fi
           
           # RELEASE event
           elif [ "$EVENT_TYPE" = "release" ]; then
-            RELEASE_NAME=$(escape_markdown "${{ github.event.release.name }}")
-            TAG_NAME=$(escape_markdown "${{ github.event.release.tag_name }}")
+            RELEASE_NAME="${{ github.event.release.name }}"
+            TAG_NAME="${{ github.event.release.tag_name }}"
             RELEASE_URL="${{ github.event.release.html_url }}"
-            VIEW_RELEASE_LINK=$(create_link "View Release" "$RELEASE_URL")
-            
-            MESSAGE="🎉 New Release%0A"
-            MESSAGE+="📦 *$RELEASE_NAME* v$TAG_NAME%0A"
-            MESSAGE+="👤 by $ESCAPED_ACTOR%0A"
-            MESSAGE+="🔗 $VIEW_RELEASE_LINK"
+            MESSAGE="🎉 <b>New Release</b>\n"
+            MESSAGE+="📦 <b>$RELEASE_NAME</b> v$TAG_NAME\n"
+            MESSAGE+="👤 by <b>$ACTOR</b>\n"
+            MESSAGE+="🔗 <a href=\"$RELEASE_URL\">View Release</a>"
           
           else
-            ESCAPED_EVENT=$(escape_markdown "$EVENT_TYPE")
-            MESSAGE="📋 Event: $ESCAPED_EVENT%0A"
-            MESSAGE+="👤 by $ESCAPED_ACTOR"
+            MESSAGE="📋 <b>Event:</b> $EVENT_TYPE\n"
+            MESSAGE+="👤 by <b>$ACTOR</b>"
           fi
           
           echo "message=$MESSAGE" >> $GITHUB_OUTPUT
@@ -138,17 +114,22 @@ jobs:
           
           echo "Debug: Final message: $MESSAGE"
           
-          # Декодируем %0A обратно в \n для корректного отображения в логах
-          DECODED_MESSAGE=$(echo "$MESSAGE" | sed 's/%0A/\\n/g')
-          echo "Debug: Decoded for logs: $DECODED_MESSAGE"
+          # Заменяем \n на реальные переносы строк
+          MESSAGE_WITH_NEWLINES=$(echo "$MESSAGE" | sed 's/\\n/\n/g')
           
-          # Отправка сообщения в тему с MarkdownV2
+          # URL-encode сообщение
+          ENCODED_MESSAGE=$(echo -n "$MESSAGE_WITH_NEWLINES" | jq -s -R -r @uri)
+          
+          echo "Debug: Encoded message: $ENCODED_MESSAGE"
+          
+          # Отправка сообщения в тему с HTML форматированием
           RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d "message_thread_id=6" \
-            -d "text=$MESSAGE" \
-            -d "parse_mode=MarkdownV2")
+            -d "text=$ENCODED_MESSAGE" \
+            -d "parse_mode=HTML" \
+            -d "disable_web_page_preview=true")
           
           # Извлекаем HTTP код и тело ответа
           HTTP_CODE=$(echo "$RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
@@ -160,21 +141,14 @@ jobs:
           if [ "$HTTP_CODE" = "200" ]; then
             echo "✅ Message sent successfully to topic 6"
           else
-            echo "❌ Failed to send with MarkdownV2, trying HTML format..."
-            # Конвертируем в HTML
-            HTML_MESSAGE=$(echo "$MESSAGE" | sed \
-              -e 's/\\//g' \
-              -e 's/\*\([^*]*\)\*/<b>\1<\/b>/g' \
-              -e 's/\[\([^]]*\)](\([^)]*\))/<a href="\2">\1<\/a>/g' \
-              -e 's/%0A/<br>/g')
+            echo "❌ Failed to send message. Response: $BODY"
+            # Попробуем отправить простой текст без форматирования
+            SIMPLE_MESSAGE=$(echo "$MESSAGE_WITH_NEWLINES" | sed -e 's/<[^>]*>//g')
+            ENCODED_SIMPLE=$(echo -n "$SIMPLE_MESSAGE" | jq -s -R -r @uri)
             
-            ENCODED_HTML=$(echo -n "$HTML_MESSAGE" | jq -s -R -r @uri)
-            
-            curl -s -w "\nHTTP_CODE:%{http_code}" -X POST \
+            curl -s -X POST \
               "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
               -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
               -d "message_thread_id=6" \
-              -d "text=$ENCODED_HTML" \
-              -d "parse_mode=HTML" \
-              -d "disable_web_page_preview=true"
+              -d "text=$ENCODED_SIMPLE"
           fi
