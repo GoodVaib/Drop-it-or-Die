@@ -4,7 +4,7 @@
 # Compiled Object files
 *.slo
 *.lo
-*.fb
+*.o
 *.obj
 
 # Precompiled Headers
@@ -33,3 +33,6 @@
 
 # ingnore this folders on my repository:
 .vscode
+
+*.fb
+python_server
