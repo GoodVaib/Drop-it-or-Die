@@ -16,36 +16,35 @@ jobs:
       - name: Prepare notification message
         id: prepare_message
         run: |
-          # Определяем тип события
           EVENT_TYPE="${{ github.event_name }}"
           MESSAGE=""
-
-          # Обработка PUSH события
+          
+          # PUSH event
           if [ "$EVENT_TYPE" = "push" ]; then
             if [ -z "${{ github.event.head_commit.id }}" ]; then
               BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
               MESSAGE="Branch deleted: $BRANCH_REF"
             else
-              MESSAGE="+ New push in repository\n\nRepository: ${{ github.repository }}\nBranch: ${{ github.ref_name }}\nAuthor: ${{ github.actor }}\nCommit: ${{ github.event.head_commit.message }}\nURL: ${{ github.event.head_commit.url }}"
+              MESSAGE="Push: ${{ github.repository }} - ${{ github.ref_name }} by ${{ github.actor }}"
             fi
-
-          # Обработка создания ветки
+          
+          # CREATE event  
           elif [ "$EVENT_TYPE" = "create" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="+ Created new branch: ${{ github.ref_name }}"
+              MESSAGE="Created branch: ${{ github.ref_name }}"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="+ Created new tag: ${{ github.ref_name }}"
+              MESSAGE="Created tag: ${{ github.ref_name }}"
             fi
-
-          # Обработка удаления ветки
+          
+          # DELETE event
           elif [ "$EVENT_TYPE" = "delete" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="- Deleted branch: ${{ github.ref_name }}"
+              MESSAGE="Deleted branch: ${{ github.ref_name }}"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="- Deleted tag: ${{ github.ref_name }}"
+              MESSAGE="Deleted tag: ${{ github.ref_name }}"
             fi
-
-          # Обработка PULL REQUEST
+          
+          # PULL_REQUEST event
           elif [ "$EVENT_TYPE" = "pull_request" ]; then
             ACTION="${{ github.event.action }}"
             PR_TITLE="${{ github.event.pull_request.title }}"
@@ -53,31 +52,25 @@ jobs:
             PR_URL="${{ github.event.pull_request.html_url }}"
             
             if [ "$ACTION" = "opened" ]; then
-              MESSAGE="+ New Pull Request: $PR_TITLE\nAuthor: $PR_AUTHOR\nURL: $PR_URL"
+              MESSAGE="New PR: $PR_TITLE by $PR_AUTHOR"
             elif [ "$ACTION" = "closed" ]; then
               if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                MESSAGE="+ Pull Request accepted: $PR_TITLE\nAuthor: $PR_AUTHOR\nURL: $PR_URL"
+                MESSAGE="PR merged: $PR_TITLE"
               else
-                MESSAGE="- Pull Request closed: $PR_TITLE\nAuthor: $PR_AUTHOR\nURL: $PR_URL"
+                MESSAGE="PR closed: $PR_TITLE"
               fi
             elif [ "$ACTION" = "reopened" ]; then
-              MESSAGE="+ Pull Request reopened: $PR_TITLE\nAuthor: $PR_AUTHOR\nURL: $PR_URL"
+              MESSAGE="PR reopened: $PR_TITLE"
             fi
-            
-          # Обработка RELEASE
+          
+          # RELEASE event
           elif [ "$EVENT_TYPE" = "release" ]; then
-            MESSAGE="+ New release: ${{ github.event.release.name }}\nVersion: ${{ github.event.release.tag_name }}\nDescription: ${{ github.event.release.body }}\nURL: ${{ github.event.release.html_url }}"
-
+            MESSAGE="New release: ${{ github.event.release.name }} v${{ github.event.release.tag_name }}"
+          
           else
             MESSAGE="Event: $EVENT_TYPE"
           fi
-
-          # Экранируем специальные символы для вывода
-          MESSAGE="${MESSAGE//'%'/'%25'}"
-          MESSAGE="${MESSAGE//$'\n'/'%0A'}"
-          MESSAGE="${MESSAGE//$'\r'/'%0D'}"
           
-          # Современный формат вывода
           echo "message=$MESSAGE" >> $GITHUB_OUTPUT
 
       - name: Send Telegram notification
