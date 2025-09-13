@@ -28,6 +28,13 @@ jobs:
             echo "$1" | sed -e 's/[_*\[\]()~`>#+\-=|{}\.!]/\\&/g' -e 's/-/\\-/g'
           }
           
+          # Функция для создания MarkdownV2 ссылок с экранированием
+          create_link() {
+            local text=$(escape_markdown "$1")
+            local url="$2"
+            echo "[$text]($url)"
+          }
+          
           ESCAPED_REPO=$(escape_markdown "$REPO_NAME")
           ESCAPED_REF=$(escape_markdown "$REF_NAME")
           ESCAPED_ACTOR=$(escape_markdown "$ACTOR")
@@ -41,10 +48,12 @@ jobs:
             else
               COMMIT_MSG=$(escape_markdown "${{ github.event.head_commit.message }}")
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.event.head_commit.id }}"
+              VIEW_COMMIT_LINK=$(create_link "View commit" "$COMMIT_URL")
+              
               MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF*%0A%0A"
               MESSAGE+="💬 $COMMIT_MSG%0A"
               MESSAGE+="👤 by $ESCAPED_ACTOR%0A"
-              MESSAGE+="🔗 [View commit]($COMMIT_URL)"
+              MESSAGE+="🔗 $VIEW_COMMIT_LINK"
             fi
           
           # CREATE event  
@@ -75,11 +84,13 @@ jobs:
             PR_URL="${{ github.event.pull_request.html_url }}"
             PR_NUMBER="${{ github.event.pull_request.number }}"
             
+            VIEW_PR_LINK=$(create_link "View PR" "$PR_URL")
+            
             if [ "$ACTION" = "opened" ]; then
               MESSAGE="🎯 New Pull Request #$PR_NUMBER%0A"
               MESSAGE+="📌 *$PR_TITLE*%0A"
               MESSAGE+="👤 by $PR_AUTHOR%0A"
-              MESSAGE+="🔗 [View PR]($PR_URL)"
+              MESSAGE+="🔗 $VIEW_PR_LINK"
             elif [ "$ACTION" = "closed" ]; then
               if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
                 MESSAGE="✅ PR Merged #$PR_NUMBER%0A"
@@ -94,7 +105,7 @@ jobs:
               MESSAGE="🔄 PR Reopened #$PR_NUMBER%0A"
               MESSAGE+="📌 *$PR_TITLE*%0A"
               MESSAGE+="👤 by $PR_AUTHOR%0A"
-              MESSAGE+="🔗 [View PR]($PR_URL)"
+              MESSAGE+="🔗 $VIEW_PR_LINK"
             fi
           
           # RELEASE event
@@ -102,10 +113,12 @@ jobs:
             RELEASE_NAME=$(escape_markdown "${{ github.event.release.name }}")
             TAG_NAME=$(escape_markdown "${{ github.event.release.tag_name }}")
             RELEASE_URL="${{ github.event.release.html_url }}"
+            VIEW_RELEASE_LINK=$(create_link "View Release" "$RELEASE_URL")
+            
             MESSAGE="🎉 New Release%0A"
             MESSAGE+="📦 *$RELEASE_NAME* v$TAG_NAME%0A"
             MESSAGE+="👤 by $ESCAPED_ACTOR%0A"
-            MESSAGE+="🔗 [View Release]($RELEASE_URL)"
+            MESSAGE+="🔗 $VIEW_RELEASE_LINK"
           
           else
             ESCAPED_EVENT=$(escape_markdown "$EVENT_TYPE")
@@ -147,14 +160,21 @@ jobs:
           if [ "$HTTP_CODE" = "200" ]; then
             echo "✅ Message sent successfully to topic 6"
           else
-            echo "❌ Failed to send with MarkdownV2, trying without formatting..."
-            # Попробуем без форматирования
-            SIMPLE_MESSAGE=$(echo "$MESSAGE" | sed -e 's/\\//g' -e 's/\*//g' -e 's/\[\([^]]*\)]([^)]*)/\1/g' -e 's/%0A/\n/g')
-            ENCODED_SIMPLE=$(echo -n "$SIMPLE_MESSAGE" | jq -s -R -r @uri)
+            echo "❌ Failed to send with MarkdownV2, trying HTML format..."
+            # Конвертируем в HTML
+            HTML_MESSAGE=$(echo "$MESSAGE" | sed \
+              -e 's/\\//g' \
+              -e 's/\*\([^*]*\)\*/<b>\1<\/b>/g' \
+              -e 's/\[\([^]]*\)](\([^)]*\))/<a href="\2">\1<\/a>/g' \
+              -e 's/%0A/<br>/g')
             
-            curl -s -X POST \
+            ENCODED_HTML=$(echo -n "$HTML_MESSAGE" | jq -s -R -r @uri)
+            
+            curl -s -w "\nHTTP_CODE:%{http_code}" -X POST \
               "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
               -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
               -d "message_thread_id=6" \
-              -d "text=$ENCODED_SIMPLE"
+              -d "text=$ENCODED_HTML" \
+              -d "parse_mode=HTML" \
+              -d "disable_web_page_preview=true"
           fi
