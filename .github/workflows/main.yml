@@ -79,4 +79,4 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           message: ${{ steps.prepare_message.outputs.message }}
-          topic_id: 6
+          message_thread_id: 6
