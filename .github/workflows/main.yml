@@ -18,30 +18,44 @@ jobs:
         run: |
           EVENT_TYPE="${{ github.event_name }}"
           MESSAGE=""
+          REPO_NAME="${{ github.repository }}"
+          REPO_URL="https://github.com/${{ github.repository }}"
+          ACTOR="${{ github.actor }}"
+          ACTOR_URL="https://github.com/${{ github.actor }}"
+          REF_NAME="${{ github.ref_name }}"
           
           # PUSH event
           if [ "$EVENT_TYPE" = "push" ]; then
             if [ -z "${{ github.event.head_commit.id }}" ]; then
               BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
-              MESSAGE="Branch deleted: $BRANCH_REF"
+              MESSAGE="🗑️ <b>Branch deleted:</b> <code>$BRANCH_REF</code>"
             else
-              MESSAGE="> *Pushed by*: [${{ github.actor }}](https://github.com/${{ github.actor }}) - ${{ github.repository }}:${{ github.ref_name }}"
+              COMMIT_MSG="${{ github.event.head_commit.message }}"
+              COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.event.head_commit.id }}"
+              MESSAGE="📝 <b>New commit</b> in <a href=\"$REPO_URL\">$REPO_NAME</a>:<b>$REF_NAME</b>\n\n"
+              MESSAGE+="💬 <i>$COMMIT_MSG</i>\n"
+              MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>\n"
+              MESSAGE+="🔗 <a href=\"$COMMIT_URL\">View commit</a>"
             fi
           
           # CREATE event  
           elif [ "$EVENT_TYPE" = "create" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="Created branch: ${{ github.ref_name }}"
+              MESSAGE="🌿 <b>Created branch:</b> <code>$REF_NAME</code>\n"
+              MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="Created tag: ${{ github.ref_name }}"
+              MESSAGE="🏷️ <b>Created tag:</b> <code>$REF_NAME</code>\n"
+              MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>"
             fi
           
           # DELETE event
           elif [ "$EVENT_TYPE" = "delete" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="Deleted branch: ${{ github.ref_name }}"
+              MESSAGE="🗑️ <b>Deleted branch:</b> <code>$REF_NAME</code>\n"
+              MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="Deleted tag: ${{ github.ref_name }}"
+              MESSAGE="🗑️ <b>Deleted tag:</b> <code>$REF_NAME</code>\n"
+              MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>"
             fi
           
           # PULL_REQUEST event
@@ -49,43 +63,60 @@ jobs:
             ACTION="${{ github.event.action }}"
             PR_TITLE="${{ github.event.pull_request.title }}"
             PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+            PR_AUTHOR_URL="https://github.com/${{ github.event.pull_request.user.login }}"
             PR_URL="${{ github.event.pull_request.html_url }}"
+            PR_NUMBER="${{ github.event.pull_request.number }}"
             
             if [ "$ACTION" = "opened" ]; then
-              MESSAGE="New Pull request: $PR_TITLE by $PR_AUTHOR"
+              MESSAGE="🎯 <b>New Pull Request</b> #$PR_NUMBER\n"
+              MESSAGE+="📌 <b>$PR_TITLE</b>\n"
+              MESSAGE+="👤 by <a href=\"$PR_AUTHOR_URL\">$PR_AUTHOR</a>\n"
+              MESSAGE+="🔗 <a href=\"$PR_URL\">View PR</a>"
             elif [ "$ACTION" = "closed" ]; then
               if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                MESSAGE="Pull request merged: $PR_TITLE"
+                MESSAGE="✅ <b>PR Merged</b> #$PR_NUMBER\n"
+                MESSAGE+="📌 <b>$PR_TITLE</b>\n"
+                MESSAGE+="👤 by <a href=\"$PR_AUTHOR_URL\">$PR_AUTHOR</a>"
               else
-                MESSAGE="Pull request closed: $PR_TITLE"
+                MESSAGE="❌ <b>PR Closed</b> #$PR_NUMBER\n"
+                MESSAGE+="📌 <b>$PR_TITLE</b>\n"
+                MESSAGE+="👤 by <a href=\"$PR_AUTHOR_URL\">$PR_AUTHOR</a>"
               fi
             elif [ "$ACTION" = "reopened" ]; then
-              MESSAGE="Pull request reopened: $PR_TITLE"
+              MESSAGE="🔄 <b>PR Reopened</b> #$PR_NUMBER\n"
+              MESSAGE+="📌 <b>$PR_TITLE</b>\n"
+              MESSAGE+="👤 by <a href=\"$PR_AUTHOR_URL\">$PR_AUTHOR</a>\n"
+              MESSAGE+="🔗 <a href=\"$PR_URL\">View PR</a>"
             fi
           
           # RELEASE event
           elif [ "$EVENT_TYPE" = "release" ]; then
-            MESSAGE="New release: ${{ github.event.release.name }} v${{ github.event.release.tag_name }}"
+            RELEASE_NAME="${{ github.event.release.name }}"
+            TAG_NAME="${{ github.event.release.tag_name }}"
+            RELEASE_URL="${{ github.event.release.html_url }}"
+            MESSAGE="🎉 <b>New Release</b>\n"
+            MESSAGE+="📦 <b>$RELEASE_NAME</b> v$TAG_NAME\n"
+            MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>\n"
+            MESSAGE+="🔗 <a href=\"$RELEASE_URL\">View Release</a>"
           
           else
-            MESSAGE="Event: $EVENT_TYPE"
+            MESSAGE="📋 <b>Event:</b> $EVENT_TYPE\n"
+            MESSAGE+="👤 by <a href=\"$ACTOR_URL\">$ACTOR</a>"
           fi
           
           echo "message=$MESSAGE" >> $GITHUB_OUTPUT
 
       - name: Send Telegram notification via API
         run: |
-          # URL-encode сообщение
-          MESSAGE_URL_ENCODED=$(echo "${{ steps.prepare_message.outputs.message }}" | jq -s -R -r @uri)
-          
-          # Отправка сообщения в тему
+          # Отправка сообщения в тему с HTML форматированием
           curl -s -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d "message_thread_id=6" \
-            -d "text=$MESSAGE_URL_ENCODED" \
-            -d "parse_mode=HTML"
+            -d "text=${{ steps.prepare_message.outputs.message }}" \
+            -d "parse_mode=HTML" \
+            -d "disable_web_page_preview=true"
           
           # Проверка статуса отправки
           if [ $? -eq 0 ]; then
