@@ -78,12 +78,12 @@ jobs:
                        Author: $PR_AUTHOR
                        URL: $PR_URL"
             fi
-
+            
           # Обработка RELEASE
           elif [ "$EVENT_TYPE" = "release" ]; then
-            MESSAGE="+ New release: ${{ github.event.release.name }}
-                     Version: ${{ github.event.release.tag_name }}
-                     Description: ${{ github.event.release.body }}
+            MESSAGE="+ New release: ${{ github.event.release.name }} \n
+                     Version: ${{ github.event.release.tag_name }} \n
+                     Description: ${{ github.event.release.body }} \n
                      URL: ${{ github.event.release.html_url }}"
 
           else
