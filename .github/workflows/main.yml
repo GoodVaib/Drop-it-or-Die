@@ -25,8 +25,7 @@ jobs:
               BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
               MESSAGE="Branch deleted: $BRANCH_REF"
             else
-              MESSAGE="> *Pushed by*: [${{ github.actor }}](https://github.com/${{ github.actor }})
-          ${{ github.repository }}:${{ github.ref_name }}"
+              MESSAGE="> *Pushed by*: [${{ github.actor }}](https://github.com/${{ github.actor }}) - ${{ github.repository }}:${{ github.ref_name }}"
             fi
           
           # CREATE event  
