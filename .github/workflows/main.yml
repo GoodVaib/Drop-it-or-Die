@@ -6,8 +6,8 @@ on:
     types: [opened, closed, reopened]
   release:
     types: [published]
-  create: # Создание ветки или тега
-  delete: # Удаление ветки или тега
+  create:
+  delete:
 
 jobs:
   notify:
@@ -18,21 +18,15 @@ jobs:
         run: |
           # Определяем тип события
           EVENT_TYPE="${{ github.event_name }}"
+          MESSAGE=""
 
           # Обработка PUSH события
           if [ "$EVENT_TYPE" = "push" ]; then
-            # Проверяем, был ли удалена ветка (коммитов в push нет)
             if [ -z "${{ github.event.head_commit.id }}" ]; then
               BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
               MESSAGE="🗑️ Ветка удалена: $BRANCH_REF"
             else
-              # Обычный push с коммитами
-              MESSAGE="📌 Новый push в репозиторий
-              📂 Репозиторий: ${{ github.repository }}
-              🌿 Ветка: ${{ github.ref_name }}
-              👤 Автор: ${{ github.actor }}
-              💬 Коммит: ${{ github.event.head_commit.message }}
-              🔗 Ссылка: ${{ github.event.head_commit.url }}"
+              MESSAGE="📌 Новый push в репозиторий\n📂 Репозиторий: ${{ github.repository }}\n🌿 Ветка: ${{ github.ref_name }}\n👤 Автор: ${{ github.actor }}\n💬 Коммит: ${{ github.event.head_commit.message }}\n🔗 Ссылка: ${{ github.event.head_commit.url }}"
             fi
 
           # Обработка создания ветки
@@ -58,47 +52,36 @@ jobs:
             PR_AUTHOR="${{ github.event.pull_request.user.login }}"
             PR_URL="${{ github.event.pull_request.html_url }}"
             
-            case $ACTION in
-              "opened")
-                MESSAGE="🆕 Новый Pull Request: $PR_TITLE
-                👤 Автор: $PR_AUTHOR
-                🔗 Ссылка: $PR_URL" ;;
-              "closed")
-                if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                  MESSAGE="✅ Pull Request принят: $PR_TITLE
-                  👤 Автор: $PR_AUTHOR
-                  🔗 Ссылка: $PR_URL"
-                else
-                  MESSAGE="❌ Pull Request закрыт: $PR_TITLE
-                  👤 Автор: $PR_AUTHOR
-                  🔗 Ссылка: $PR_URL"
-                fi ;;
-              "reopened")
-                MESSAGE="🔄 Pull Request reopened: $PR_TITLE
-                👤 Автор: $PR_AUTHOR
-                🔗 Ссылка: $PR_URL" ;;
-            esac
+            if [ "$ACTION" = "opened" ]; then
+              MESSAGE="🆕 Новый Pull Request: $PR_TITLE\n👤 Автор: $PR_AUTHOR\n🔗 Ссылка: $PR_URL"
+            elif [ "$ACTION" = "closed" ]; then
+              if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+                MESSAGE="✅ Pull Request принят: $PR_TITLE\n👤 Автор: $PR_AUTHOR\n🔗 Ссылка: $PR_URL"
+              else
+                MESSAGE="❌ Pull Request закрыт: $PR_TITLE\n👤 Автор: $PR_AUTHOR\n🔗 Ссылка: $PR_URL"
+              fi
+            elif [ "$ACTION" = "reopened" ]; then
+              MESSAGE="🔄 Pull Request reopened: $PR_TITLE\n👤 Автор: $PR_AUTHOR\n🔗 Ссылка: $PR_URL"
+            fi
 
           # Обработка RELEASE
           elif [ "$EVENT_TYPE" = "release" ]; then
-            MESSAGE="🎉 Новый релиз: ${{ github.event.release.name }}
-            🏷️ Версия: ${{ github.event.release.tag_name }}
-            📝 Описание: ${{ github.event.release.body }}
-            🔗 Ссылка: ${{ github.event.release.html_url }}"
+            MESSAGE="🎉 Новый релиз: ${{ github.event.release.name }}\n🏷️ Версия: ${{ github.event.release.tag_name }}\n📝 Описание: ${{ github.event.release.body }}\n🔗 Ссылка: ${{ github.event.release.html_url }}"
 
           else
             MESSAGE="ℹ️ Событие: $EVENT_TYPE"
           fi
 
-          # Убираем лишние отступы в многострочном тексте
-          MESSAGE=$(echo "$MESSAGE" | sed 's/^[ \t]*//')
+          # Экранируем специальные символы для вывода
+          MESSAGE="${MESSAGE//'%'/'%25'}"
+          MESSAGE="${MESSAGE//$'\n'/'%0A'}"
+          MESSAGE="${MESSAGE//$'\r'/'%0D'}"
           
-          # Устанавливаем output для использования в следующем шаге
-          echo "message=$MESSAGE" >> $GITHUB_OUTPUT
+          echo "::set-output name=message::$MESSAGE"
 
       - name: Send Telegram notification
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           message: ${{ steps.prepare_message.outputs.message }}
