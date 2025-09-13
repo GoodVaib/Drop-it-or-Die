@@ -2,76 +2,15 @@ name: Telegram Notifications
 
 on:
   push:
-  pull_request:
-    types: [opened, closed, reopened]
-  release:
-    types: [published]
-  create:
-  delete:
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare notification message
+      - name: Prepare message
         id: prepare_message
         run: |
-          EVENT_TYPE="${{ github.event_name }}"
-          MESSAGE=""
-          
-          # PUSH event
-          if [ "$EVENT_TYPE" = "push" ]; then
-            if [ -z "${{ github.event.head_commit.id }}" ]; then
-              BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
-              MESSAGE="Branch deleted: $BRANCH_REF"
-            else
-              MESSAGE="Push: ${{ github.repository }} - ${{ github.ref_name }} by ${{ github.actor }}"
-            fi
-          
-          # CREATE event  
-          elif [ "$EVENT_TYPE" = "create" ]; then
-            if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="Created branch: ${{ github.ref_name }}"
-            elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="Created tag: ${{ github.ref_name }}"
-            fi
-          
-          # DELETE event
-          elif [ "$EVENT_TYPE" = "delete" ]; then
-            if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="Deleted branch: ${{ github.ref_name }}"
-            elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="Deleted tag: ${{ github.ref_name }}"
-            fi
-          
-          # PULL_REQUEST event
-          elif [ "$EVENT_TYPE" = "pull_request" ]; then
-            ACTION="${{ github.event.action }}"
-            PR_TITLE="${{ github.event.pull_request.title }}"
-            PR_AUTHOR="${{ github.event.pull_request.user.login }}"
-            PR_URL="${{ github.event.pull_request.html_url }}"
-            
-            if [ "$ACTION" = "opened" ]; then
-              MESSAGE="New PR: $PR_TITLE by $PR_AUTHOR"
-            elif [ "$ACTION" = "closed" ]; then
-              if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                MESSAGE="PR merged: $PR_TITLE"
-              else
-                MESSAGE="PR closed: $PR_TITLE"
-              fi
-            elif [ "$ACTION" = "reopened" ]; then
-              MESSAGE="PR reopened: $PR_TITLE"
-            fi
-          
-          # RELEASE event
-          elif [ "$EVENT_TYPE" = "release" ]; then
-            MESSAGE="New release: ${{ github.event.release.name }} v${{ github.event.release.tag_name }}"
-          
-          else
-            MESSAGE="Event: $EVENT_TYPE"
-          fi
-          
-          echo "message=$MESSAGE" >> $GITHUB_OUTPUT
+          echo "message=Test message from ${{ github.event_name }}" >> $GITHUB_OUTPUT
 
       - name: Send Telegram notification
         uses: appleboy/telegram-action@master
