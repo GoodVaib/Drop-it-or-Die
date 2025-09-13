@@ -26,13 +26,7 @@ jobs:
               BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
               MESSAGE="Branch deleted: $BRANCH_REF"
             else
-              MESSAGE="+ New push in repository
-
-Repository: ${{ github.repository }}
-Branch: ${{ github.ref_name }}
-Author: ${{ github.actor }}
-Commit: ${{ github.event.head_commit.message }}
-URL: ${{ github.event.head_commit.url }}"
+              MESSAGE="+ New push in repository\n\nRepository: ${{ github.repository }}\nBranch: ${{ github.ref_name }}\nAuthor: ${{ github.actor }}\nCommit: ${{ github.event.head_commit.message }}\nURL: ${{ github.event.head_commit.url }}"
             fi
 
           # Обработка создания ветки
@@ -59,31 +53,20 @@ URL: ${{ github.event.head_commit.url }}"
             PR_URL="${{ github.event.pull_request.html_url }}"
             
             if [ "$ACTION" = "opened" ]; then
-              MESSAGE="+ New Pull Request: $PR_TITLE
-Author: $PR_AUTHOR
-URL: $PR_URL"
+              MESSAGE="+ New Pull Request: $PR_TITLE\nAuthor: $PR_AUTHOR\nURL: $PR_URL"
             elif [ "$ACTION" = "closed" ]; then
               if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                MESSAGE="+ Pull Request accepted: $PR_TITLE
-Author: $PR_AUTHOR
-URL: $PR_URL"
+                MESSAGE="+ Pull Request accepted: $PR_TITLE\nAuthor: $PR_AUTHOR\nURL: $PR_URL"
               else
-                MESSAGE="- Pull Request closed: $PR_TITLE
-Author: $PR_AUTHOR
-URL: $PR_URL"
+                MESSAGE="- Pull Request closed: $PR_TITLE\nAuthor: $PR_AUTHOR\nURL: $PR_URL"
               fi
             elif [ "$ACTION" = "reopened" ]; then
-              MESSAGE="+ Pull Request reopened: $PR_TITLE
-Author: $PR_AUTHOR
-URL: $PR_URL"
+              MESSAGE="+ Pull Request reopened: $PR_TITLE\nAuthor: $PR_AUTHOR\nURL: $PR_URL"
             fi
             
           # Обработка RELEASE
           elif [ "$EVENT_TYPE" = "release" ]; then
-            MESSAGE="+ New release: ${{ github.event.release.name }}
-Version: ${{ github.event.release.tag_name }}
-Description: ${{ github.event.release.body }}
-URL: ${{ github.event.release.html_url }}"
+            MESSAGE="+ New release: ${{ github.event.release.name }}\nVersion: ${{ github.event.release.tag_name }}\nDescription: ${{ github.event.release.body }}\nURL: ${{ github.event.release.html_url }}"
 
           else
             MESSAGE="Event: $EVENT_TYPE"
