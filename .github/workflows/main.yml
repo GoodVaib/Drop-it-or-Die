@@ -141,9 +141,9 @@ jobs:
           if [ "$HTTP_CODE" = "200" ]; then
             echo "✅ Message sent successfully to topic 6"
           else
-            echo "❌ Failed to send message. Response: $BODY"
-            # Попробуем отправить простой текст без форматирования
-            SIMPLE_MESSAGE=$(echo "$MESSAGE_WITH_NEWLINES" | sed -e 's/<[^>]*>//g')
+            echo "❌ Failed to send with HTML, trying without formatting..."
+            # Простой текст без HTML
+            SIMPLE_MESSAGE=$(echo "$MESSAGE_WITH_NEWLINES" | sed -e 's/<[^>]*>//g' -e 's/&amp;/\&/g' -e 's/&lt;/</g' -e 's/&gt;/>/g')
             ENCODED_SIMPLE=$(echo -n "$SIMPLE_MESSAGE" | jq -s -R -r @uri)
             
             curl -s -X POST \
