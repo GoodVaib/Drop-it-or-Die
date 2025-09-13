@@ -24,25 +24,31 @@ jobs:
           if [ "$EVENT_TYPE" = "push" ]; then
             if [ -z "${{ github.event.head_commit.id }}" ]; then
               BRANCH_REF=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
-              MESSAGE="🗑️ Ветка удалена: $BRANCH_REF"
+              MESSAGE="Branch deleted: $BRANCH_REF"
             else
-              MESSAGE="📌 Новый push в репозиторий\n📂 Репозиторий: ${{ github.repository }}\n🌿 Ветка: ${{ github.ref_name }}\n👤 Автор: ${{ github.actor }}\n💬 Коммит: ${{ github.event.head_commit.message }}\n🔗 Ссылка: ${{ github.event.head_commit.url }}"
+              MESSAGE="+ New push in repository
+
+Repository: ${{ github.repository }}
+Branch: ${{ github.ref_name }}
+Author: ${{ github.actor }}
+Commit: ${{ github.event.head_commit.message }}
+URL: ${{ github.event.head_commit.url }}"
             fi
 
           # Обработка создания ветки
           elif [ "$EVENT_TYPE" = "create" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="🌿 Создана новая ветка: ${{ github.ref_name }}"
+              MESSAGE="+ Created new branch: ${{ github.ref_name }}"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="🏷️ Создан новый тег: ${{ github.ref_name }}"
+              MESSAGE="+ Created new tag: ${{ github.ref_name }}"
             fi
 
           # Обработка удаления ветки
           elif [ "$EVENT_TYPE" = "delete" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="🗑️ Удалена ветка: ${{ github.ref_name }}"
+              MESSAGE="- Deleted branch: ${{ github.ref_name }}"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="🗑️ Удален тег: ${{ github.ref_name }}"
+              MESSAGE="- Deleted tag: ${{ github.ref_name }}"
             fi
 
           # Обработка PULL REQUEST
@@ -53,23 +59,34 @@ jobs:
             PR_URL="${{ github.event.pull_request.html_url }}"
             
             if [ "$ACTION" = "opened" ]; then
-              MESSAGE="🆕 Новый Pull Request: $PR_TITLE\n👤 Автор: $PR_AUTHOR\n🔗 Ссылка: $PR_URL"
+              MESSAGE="+ New Pull Request: $PR_TITLE
+Author: $PR_AUTHOR
+URL: $PR_URL"
             elif [ "$ACTION" = "closed" ]; then
               if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                MESSAGE="✅ Pull Request принят: $PR_TITLE\n👤 Автор: $PR_AUTHOR\n🔗 Ссылка: $PR_URL"
+                MESSAGE="+ Pull Request accepted: $PR_TITLE
+Author: $PR_AUTHOR
+URL: $PR_URL"
               else
-                MESSAGE="❌ Pull Request закрыт: $PR_TITLE\n👤 Автор: $PR_AUTHOR\n🔗 Ссылка: $PR_URL"
+                MESSAGE="- Pull Request closed: $PR_TITLE
+Author: $PR_AUTHOR
+URL: $PR_URL"
               fi
             elif [ "$ACTION" = "reopened" ]; then
-              MESSAGE="🔄 Pull Request reopened: $PR_TITLE\n👤 Автор: $PR_AUTHOR\n🔗 Ссылка: $PR_URL"
+              MESSAGE="+ Pull Request reopened: $PR_TITLE
+Author: $PR_AUTHOR
+URL: $PR_URL"
             fi
-
+            
           # Обработка RELEASE
           elif [ "$EVENT_TYPE" = "release" ]; then
-            MESSAGE="🎉 Новый релиз: ${{ github.event.release.name }}\n🏷️ Версия: ${{ github.event.release.tag_name }}\n📝 Описание: ${{ github.event.release.body }}\n🔗 Ссылка: ${{ github.event.release.html_url }}"
+            MESSAGE="+ New release: ${{ github.event.release.name }}
+Version: ${{ github.event.release.tag_name }}
+Description: ${{ github.event.release.body }}
+URL: ${{ github.event.release.html_url }}"
 
           else
-            MESSAGE="ℹ️ Событие: $EVENT_TYPE"
+            MESSAGE="Event: $EVENT_TYPE"
           fi
 
           # Экранируем специальные символы для вывода
