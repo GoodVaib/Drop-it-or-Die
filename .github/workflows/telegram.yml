@@ -10,14 +10,41 @@ jobs:
         id: trimSha
         run: |
           SHORT_SHA="${{ github.sha }}"
-          echo "::set-output name=shortSha::${SHORT_SHA:0:7}"
+          echo "SHORT_SHA=${SHORT_SHA:0:7}" >> $GITHUB_OUTPUT
 
       - name: Extract last part from URL
         id: trimRef
         run: |
           REF=${{ github.ref }}
           SHORT_REF=$(basename "$REF")
-          echo "::set-output name=shortRef::$SHORT_REF"
+          echo "SHORT_REF=$SHORT_REF" >> $GITHUB_OUTPUT
+      
+      - name: Escape commit message
+        id: escapeMessage
+        run: |
+          MESSAGE="${{ github.event.commits[0].message }}"
+          # Экранирование специальных символов для MarkdownV2
+          ESCAPED_MESSAGE=$(echo "$MESSAGE" | sed -e 's/\./\\./g' \
+                                                 -e 's/-/\\-/g' \
+                                                 -e 's/(/\\(/g' \
+                                                 -e 's/)/\\)/g' \
+                                                 -e 's/!/\\!/g' \
+                                                 -e 's/_/\\_/g' \
+                                                 -e 's/\*/\\*/g' \
+                                                 -e 's/`/\\`/g' \
+                                                 -e 's/\[/\\[/g' \
+                                                 -e 's/\]/\\]/g' \
+                                                 -e 's/#/\\#/g' \
+                                                 -e 's/+/\\+/g' \
+                                                 -e 's/=/\\=/g' \
+                                                 -e 's/|/\\|/g' \
+                                                 -e 's/{/\\{/g' \
+                                                 -e 's/}/\\}/g' \
+                                                 -e 's/>/\\>/g' \
+                                                 -e 's/</\\</g' \
+                                                 -e 's/~\\~/g' \
+                                                 -e "s/'/\\'/g")
+          echo "ESCAPED_MESSAGE=$ESCAPED_MESSAGE" >> $GITHUB_OUTPUT
           
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
@@ -30,5 +57,5 @@ jobs:
             \> Pushed by\: ${{ github.actor }}
             \[${{ github.repository }}\:${{ steps.trimRef.outputs.shortRef }}\] New commit
             
-            ${{ steps.trimSha.outputs.shortSha }} \| ${{ format('{0}', github.event.commits[0].message | replace('\n', ' ') | replace('-', '\-') | replace('.', '\.') | replace('(', '\(') | replace(')', '\)') | replace('!', '\!') | replace('_', '\_') | replace('*', '\*') | replace('`', '\`') | replace('[', '\[') | replace(']', '\]') ) }}
+            `${{ steps.trimSha.outputs.shortSha }}` \| ${{ steps.escapeMessage.outputs.ESCAPED_MESSAGE }}
             \(https\://github\.com/${{ github.repository }}/commit/${{github.sha}}\)
