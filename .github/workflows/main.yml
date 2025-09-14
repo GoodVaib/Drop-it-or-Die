@@ -137,7 +137,8 @@ jobs:
             -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d "message_thread_id=6" \
             -d "text=$ENCODED_MESSAGE" \
-            -d "parse_mode=MarkdownV2")
+            -d "parse_mode=HTML")
+            # -d "parse_mode=MarkdownV2")
           
           # Извлекаем HTTP код и тело ответа
           HTTP_CODE=$(echo "$RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
