@@ -41,30 +41,30 @@ jobs:
             else
               COMMIT_MSG=$(escape_markdown "${{ github.event.head_commit.message }}")
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.event.head_commit.id }}"
-              MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF* \n"
-              MESSAGE+="💬 $COMMIT_MSG"
-              MESSAGE+="👤 by $ESCAPED_ACTOR"
+              MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF* \\n"
+              MESSAGE+="💬 $COMMIT_MSG \\n"
+              MESSAGE+="👤 by $ESCAPED_ACTOR \\n"
               MESSAGE+="🔗 [View commit]($COMMIT_URL)"
             fi
           
           # CREATE event  
           elif [ "$EVENT_TYPE" = "create" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="🌿 Created branch: *$ESCAPED_REF*"
-              MESSAGE+="\n👤 by $ESCAPED_ACTOR"
+              MESSAGE="🌿 Created branch: *$ESCAPED_REF* \\n"
+              MESSAGE+="👤 by $ESCAPED_ACTOR"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="🏷️ Created tag: *$ESCAPED_REF*"
-              MESSAGE+="\n👤 by $ESCAPED_ACTOR"
+              MESSAGE="🏷️ Created tag: *$ESCAPED_REF* \\n"
+              MESSAGE+="👤 by $ESCAPED_ACTOR"
             fi
           
           # DELETE event
           elif [ "$EVENT_TYPE" = "delete" ]; then
             if [ "${{ github.ref_type }}" = "branch" ]; then
-              MESSAGE="🗑️ Deleted branch: *$ESCAPED_REF*"
-              MESSAGE+="\n👤 by $ESCAPED_ACTOR"
+              MESSAGE="🗑️ Deleted branch: *$ESCAPED_REF* \\n"
+              MESSAGE+="👤 by $ESCAPED_ACTOR"
             elif [ "${{ github.ref_type }}" = "tag" ]; then
-              MESSAGE="🗑️ Deleted tag: *$ESCAPED_REF*"
-              MESSAGE+="\n👤 by $ESCAPED_ACTOR"
+              MESSAGE="🗑️ Deleted tag: *$ESCAPED_REF* \\n"
+              MESSAGE+="👤 by $ESCAPED_ACTOR"
             fi
           
           # PULL_REQUEST event
@@ -76,25 +76,25 @@ jobs:
             PR_NUMBER="${{ github.event.pull_request.number }}"
             
             if [ "$ACTION" = "opened" ]; then
-              MESSAGE="🎯 New Pull Request #$PR_NUMBER"
-              MESSAGE+="\n📌 *$PR_TITLE*"
-              MESSAGE+="\n👤 by $PR_AUTHOR"
-              MESSAGE+="\n🔗 [View PR]($PR_URL)"
+              MESSAGE="🎯 New Pull Request #$PR_NUMBER \\n"
+              MESSAGE+="📌 *$PR_TITLE* \\n"
+              MESSAGE+="👤 by $PR_AUTHOR \\n"
+              MESSAGE+="🔗 [View PR]($PR_URL)"
             elif [ "$ACTION" = "closed" ]; then
               if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                MESSAGE="✅ PR Merged #$PR_NUMBER"
-                MESSAGE+="\n📌 *$PR_TITLE*"
-                MESSAGE+="\n👤 by $PR_AUTHOR"
+                MESSAGE="✅ PR Merged #$PR_NUMBER \\n"
+                MESSAGE+="📌 *$PR_TITLE* \\n"
+                MESSAGE+="👤 by $PR_AUTHOR"
               else
-                MESSAGE="❌ PR Closed #$PR_NUMBER"
-                MESSAGE+="\n📌 *$PR_TITLE*"
-                MESSAGE+="\n👤 by $PR_AUTHOR"
+                MESSAGE="❌ PR Closed #$PR_NUMBER \\n"
+                MESSAGE+="📌 *$PR_TITLE* \\n"
+                MESSAGE+="👤 by $PR_AUTHOR"
               fi
             elif [ "$ACTION" = "reopened" ]; then
-              MESSAGE="🔄 PR Reopened #$PR_NUMBER"
-              MESSAGE+="\n📌 *$PR_TITLE*"
-              MESSAGE+="\n👤 by $PR_AUTHOR"
-              MESSAGE+="\n🔗 [View PR]($PR_URL)"
+              MESSAGE="🔄 PR Reopened #$PR_NUMBER \\n"
+              MESSAGE+="📌 *$PR_TITLE* \\n"
+              MESSAGE+="👤 by $PR_AUTHOR \\n"
+              MESSAGE+="🔗 [View PR]($PR_URL)"
             fi
           
           # RELEASE event
@@ -102,22 +102,22 @@ jobs:
             RELEASE_NAME=$(escape_markdown "${{ github.event.release.name }}")
             TAG_NAME=$(escape_markdown "${{ github.event.release.tag_name }}")
             RELEASE_URL="${{ github.event.release.html_url }}"
-            MESSAGE="🎉 New Release"
-            MESSAGE+="\n📦 *$RELEASE_NAME* v$TAG_NAME"
-            MESSAGE+="\n👤 by $ESCAPED_ACTOR"
-            MESSAGE+="\n🔗 [View Release]($RELEASE_URL)"
+            MESSAGE="🎉 New Release \\n"
+            MESSAGE+="📦 *$RELEASE_NAME* v$TAG_NAME \\n"
+            MESSAGE+="👤 by $ESCAPED_ACTOR \\n"
+            MESSAGE+="🔗 [View Release]($RELEASE_URL)"
           
           else
             ESCAPED_EVENT=$(escape_markdown "$EVENT_TYPE")
-            MESSAGE="📋 Event: $ESCAPED_EVENT"
-            MESSAGE+="\n👤 by $ESCAPED_ACTOR"
+            MESSAGE="📋 Event: $ESCAPED_EVENT \\n"
+            MESSAGE+="👤 by $ESCAPED_ACTOR"
           fi
           
           echo "message=$MESSAGE" >> $GITHUB_OUTPUT
           echo "Debug: Message prepared: $MESSAGE"
 
-      #- name: Install jq for URL encoding
-        #run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Install jq for URL encoding
+        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Send Telegram notification via API
         run: |
@@ -125,7 +125,8 @@ jobs:
           
           echo "Debug: Final message: $MESSAGE"
 
-          MESSAGE_WITH_NEWLINES=$(echo "$MESSAGE" | sed 's/\\n/\n/g')
+          # Заменяем \\n на настоящие переносы строк
+          MESSAGE_WITH_NEWLINES=$(echo "$MESSAGE" | sed 's/\\\\n/\n/g')
           
           # URL-encode сообщение
           ENCODED_MESSAGE=$(echo -n "$MESSAGE_WITH_NEWLINES" | jq -s -R -r @uri)
@@ -152,7 +153,7 @@ jobs:
           else
             echo "❌ Failed to send with MarkdownV2, trying HTML format..."
             # Попробуем с HTML форматированием
-            HTML_MESSAGE=$(echo "$MESSAGE" | sed -e 's/\\//g' -e 's/\*\([^*]*\)\*/<b>\1<\/b>/g' -e 's/\[\([^]]*\)](\([^)]*\))/<a href="\2">\1<\/a>/g' -e 's/\n/<br>/g')
+            HTML_MESSAGE=$(echo "$MESSAGE_WITH_NEWLINES" | sed -e 's/\*\([^*]*\)\*/<b>\1<\/b>/g' -e 's/\[\([^]]*\)](\([^)]*\))/<a href="\2">\1<\/a>/g' -e 's/\\//g')
             ENCODED_HTML=$(echo -n "$HTML_MESSAGE" | jq -s -R -r @uri)
             
             curl -s -w "\nHTTP_CODE:%{http_code}" -X POST \
