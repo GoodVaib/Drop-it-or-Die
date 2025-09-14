@@ -16,8 +16,8 @@ jobs:
         id: trim-ref
         run: |
           REF=${{ github.ref }}
-          FILENAME=$(basename "$URL")
-          echo "::set-output name=short_ref::${basename "$REF"}"
+          SHORT_REF=$(basename "$REF")
+          echo "::set-output name=short_ref::$SHORT_REF"
           
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
