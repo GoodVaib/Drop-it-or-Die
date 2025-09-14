@@ -10,19 +10,19 @@ jobs:
         id: trimSha
         run: |
           SHORT_SHA="${{ github.sha }}"
-           echo "::set-output name=shortSha::${SHORT_SHA:0:7}"
+           echo "shortSha=${SHORT_SHA:0:7}" >> $GITHUB_OUTPUT
 
       - name: Extract last part from URL
         id: trimRef
         run: |
           REF=${{ github.ref }}
           SHORT_REF=$(basename "$REF")
-          echo "::set-output name=shortRef::$SHORT_REF"
+          echo "shortRef=$SHORT_REF" >> $GITHUB_OUTPUT
           
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
         with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}:6
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}?message_thread_id=6
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           format: html
           disable_web_page_preview: true
