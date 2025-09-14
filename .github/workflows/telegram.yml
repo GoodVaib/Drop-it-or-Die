@@ -29,6 +29,6 @@ jobs:
           disable_web_page_preview: true
           message: |
             <b>Pushed by:</b> <a href="https://github.com/${{ github.actor }}">${{ github.actor }}</a>
-            <b><a href="https://github.com/${{ github.repository }}">[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</b> 1 New commit</a>
+            <a href="https://github.com/${{ github.repository }}"><b>[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</b> 1 New commit</a>
             
             <blockquote><a href="https://github.com/${{ github.repository }}/commit/${{github.sha}}">${{ steps.trimSha.outputs.shortSha }}</a> | ${{ github.event.commits[0].message }}</blockquote>
