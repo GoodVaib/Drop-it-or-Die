@@ -41,7 +41,7 @@ jobs:
             else
               COMMIT_MSG=$(escape_markdown "${{ github.event.head_commit.message }}")
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.event.head_commit.id }}"
-              MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF*", "\n"
+              MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF* \n"
               MESSAGE+="💬 $COMMIT_MSG"
               MESSAGE+="👤 by $ESCAPED_ACTOR"
               MESSAGE+="🔗 [View commit]($COMMIT_URL)"
@@ -124,9 +124,11 @@ jobs:
           MESSAGE="${{ steps.prepare_message.outputs.message }}"
           
           echo "Debug: Final message: $MESSAGE"
+
+          MESSAGE_WITH_NEWLINES=$(echo "$MESSAGE" | sed 's/\\n/\n/g')
           
           # URL-encode сообщение
-          ENCODED_MESSAGE=$(echo -n "$MESSAGE" | jq -s -R -r @uri)
+          ENCODED_MESSAGE=$(echo -n "$MESSAGE_WITH_NEWLINES" | jq -s -R -r @uri)
           
           echo "Debug: Encoded message: $ENCODED_MESSAGE"
           
