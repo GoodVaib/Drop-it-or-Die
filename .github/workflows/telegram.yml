@@ -14,7 +14,6 @@ jobs:
     name: Send Telegram Notification
     runs-on: ubuntu-latest
     
-    # Определяем, какой тип события вызвал workflow
     env:
       EVENT_TYPE: ${{ github.event_name }}
     
