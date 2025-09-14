@@ -28,7 +28,7 @@ jobs:
           format: markdownv2
           message: |
             \> Pushed by\: ${{ github.actor }}
-            \[${{ github.repository }}\:${{ steps.trim\-ref.outputs.short_ref }}\] New commit
+            \[${{ github.repository }}\:${{ steps.trim-ref.outputs.short_ref }}\] New commit
             
-            ${{ steps.trim\-sha.outputs.short_sha }} \| ${{ github.event.commits[0].message }}
+            ${{ steps.trim-sha.outputs.short_sha }} \| ${{ github.event.commits[0].message }}
             \(https\://github\.com/${{ github.repository }}/commit/${{github.sha}}\)
