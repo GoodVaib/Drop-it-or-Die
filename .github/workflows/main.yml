@@ -41,8 +41,9 @@ jobs:
             else
               COMMIT_MSG=$(escape_markdown "${{ github.event.head_commit.message }}")
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.event.head_commit.id }}"
-              MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF*"
-              MESSAGE+="💬 $COMMIT_MSG\n\n"
+              ENDL="\n"
+              MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF* $ENDL $ENDL"
+              MESSAGE+="💬 $COMMIT_MSG $ENDL"
               MESSAGE+="👤 by $ESCAPED_ACTOR\n"
               MESSAGE+="🔗 [View commit]($COMMIT_URL)"
             fi
