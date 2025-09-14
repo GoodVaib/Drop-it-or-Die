@@ -11,32 +11,15 @@ jobs:
         run: |
           SHORT_SHA="${{ github.sha }}"
           echo "::set-output name=short_sha::${SHORT_SHA:0:7}"
-      
-      - name: Escape all special characters for MarkdownV2
-        id: escape
-        run: |
-          # Функция для экранирования спецсимволов MarkdownV2
-          escape_md_v2() {
-            echo "$1" | sed -e 's/\([_*\[\]()~`>#+\-=|{}.!]\)/\\\1/g'
-          }
-          
-          # Экранируем все переменные
-          ESCAPED_ACTOR=$(escape_md_v2 "${{ github.actor }}")
-          ESCAPED_REPO=$(escape_md_v2 "${{ github.repository }}")
-          ESCAPED_COMMIT_MSG=$(escape_md_v2 "${{ github.event.commits[0].message }}")
-          
-          echo "::set-output name=actor::${ESCAPED_ACTOR}"
-          echo "::set-output name=repo::${ESCAPED_REPO}"
-          echo "::set-output name=commit_msg::${ESCAPED_COMMIT_MSG}"
-      
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          thread_id: ${{ secrets.TELEGRAM_THREAD }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          format: markdownv2
           message: |
-            *Pushed by\\:* `${{ steps.escape.outputs.actor }}`
-            *Repository\\:* `${{ steps.escape.outputs.repo }}` branch\\: New commit
+            > Pushed by: ${{ github.actor }}
+            Repository: ${{ github.repository }}:(branch) New commit
             
-            [`${{ steps.trim-sha.outputs.short_sha }}`](https://github.com/${{ github.repository }}/commit/${{github.sha}}) \| ${{ steps.escape.outputs.commit_msg }}
+            ${{ steps.trim-sha.outputs.short_sha }} | ${{ github.event.commits[0].message }}
+            (url commit: https://github.com/${{ github.repository }}/commit/${{github.sha}}
