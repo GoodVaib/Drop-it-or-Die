@@ -18,33 +18,6 @@ jobs:
           REF=${{ github.ref }}
           SHORT_REF=$(basename "$REF")
           echo "SHORT_REF=$SHORT_REF" >> $GITHUB_OUTPUT
-      
-      - name: Escape commit message
-        id: escapeMessage
-        run: |
-          MESSAGE="${{ github.event.commits[0].message }}"
-          # Экранирование специальных символов для MarkdownV2
-          ESCAPED_MESSAGE=$(echo "$MESSAGE" | sed -e 's/\./\\./g' \
-                                                 -e 's/-/\\-/g' \
-                                                 -e 's/(/\\(/g' \
-                                                 -e 's/)/\\)/g' \
-                                                 -e 's/!/\\!/g' \
-                                                 -e 's/_/\\_/g' \
-                                                 -e 's/\*/\\*/g' \
-                                                 -e 's/`/\\`/g' \
-                                                 -e 's/\[/\\[/g' \
-                                                 -e 's/\]/\\]/g' \
-                                                 -e 's/#/\\#/g' \
-                                                 -e 's/+/\\+/g' \
-                                                 -e 's/=/\\=/g' \
-                                                 -e 's/|/\\|/g' \
-                                                 -e 's/{/\\{/g' \
-                                                 -e 's/}/\\}/g' \
-                                                 -e 's/>/\\>/g' \
-                                                 -e 's/</\\</g' \
-                                                 -e 's/~/\\~/g' \
-                                                 -e "s/'/\\'/g")
-          echo "ESCAPED_MESSAGE=$ESCAPED_MESSAGE" >> $GITHUB_OUTPUT
           
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
@@ -52,10 +25,9 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           thread_id: ${{ secrets.TELEGRAM_THREAD }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          format: markdownv2
+          format: html
           message: |
-            \> Pushed by\: ${{ github.actor }}
-            \[${{ github.repository }}\:${{ steps.trimRef.outputs.shortRef }}\] New commit
-            
-            `${{ steps.trimSha.outputs.shortSha }}` \| ${{ steps.escapeMessage.outputs.ESCAPED_MESSAGE }}
-            \(https\://github\.com/${{ github.repository }}/commit/${{github.sha}}\)
+            <b>Pushed by:</b> ${{ github.actor }}<br>
+            <b>[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</b> New commit<br><br>
+            <code>${{ steps.trimSha.outputs.shortSha }}</code> | ${{ github.event.commits[0].message }}<br>
+            <a href="https://github.com/${{ github.repository }}/commit/${{github.sha}}">View commit</a>
