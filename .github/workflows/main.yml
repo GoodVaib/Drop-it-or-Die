@@ -42,9 +42,9 @@ jobs:
               COMMIT_MSG=$(escape_markdown "${{ github.event.head_commit.message }}")
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.event.head_commit.id }}"
               ENDL="\n"
-              MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF* $ENDL $ENDL"
-              MESSAGE+="💬 $COMMIT_MSG $ENDL"
-              MESSAGE+="👤 by $ESCAPED_ACTOR\n"
+              MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF* %0A %0A"
+              MESSAGE+="💬 $COMMIT_MSG %0A"
+              MESSAGE+="👤 by $ESCAPED_ACTOR %0A"
               MESSAGE+="🔗 [View commit]($COMMIT_URL)"
             fi
           
@@ -137,8 +137,7 @@ jobs:
             -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d "message_thread_id=6" \
             -d "text=$ENCODED_MESSAGE" \
-            -d "parse_mode=HTML")
-            # -d "parse_mode=MarkdownV2")
+            -d "parse_mode=MarkdownV2")
           
           # Извлекаем HTTP код и тело ответа
           HTTP_CODE=$(echo "$RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
