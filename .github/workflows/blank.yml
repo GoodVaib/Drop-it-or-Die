@@ -21,5 +21,4 @@ jobs:
             > Pushed by: ${{ github.actor }}
             Repository: ${{ github.repository }}:(branch) New commit
             
-            ${{ steps.trim-sha.outputs.short_sha }} | ${{ github.event.commits[0].message }}
-            (url commit: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+            [${{ steps.trim-sha.outputs.short_sha }}](https://github.com/${{ github.repository }}/commit/${{github.sha}}) | ${{ github.event.commits[0].message }}
