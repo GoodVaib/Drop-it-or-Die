@@ -6,6 +6,8 @@ on:
     types: [opened, closed, reopened]
   release:
     types: [published, edited]
+  create:
+  delete:
 
 jobs:
   telegram-notification:
@@ -41,6 +43,16 @@ jobs:
           echo "release_tag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
           echo "release_action=${{ github.event.action }}" >> $GITHUB_OUTPUT
 
+      - name: Get branch info for create/delete events
+        id: branch-info
+        if: github.event_name == 'create' || github.event_name == 'delete'
+        run: |
+          echo "ref_type=${{ github.event.ref_type }}" >> $GITHUB_OUTPUT
+          echo "ref_name=${{ github.event.ref }}" >> $GITHUB_OUTPUT
+          # Извлекаем только имя ветки/тега из полной ссылки
+          SHORT_REF=$(basename "${{ github.event.ref }}")
+          echo "short_ref=$SHORT_REF" >> $GITHUB_OUTPUT
+
       - name: Extract branch/tag name
         id: trimRef
         run: |
@@ -52,6 +64,8 @@ jobs:
             echo "shortRef=${{ github.head_ref || github.event.pull_request.head.ref }}" >> $GITHUB_OUTPUT
           elif [ "${{ github.event_name }}" = "release" ]; then
             echo "shortRef=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "create" ] || [ "${{ github.event_name }}" = "delete" ]; then
+            echo "shortRef=${{ steps.branch-info.outputs.short_ref }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Compose message based on event type
@@ -99,9 +113,44 @@ jobs:
               "<b>Release $ACTION_TEXT by:</b> ${{ github.actor }}
               <b>[${{ github.repository }}]</b> ${{ steps.release-info.outputs.release_name }}
 
-              <b>Tag:</b> ${{ steps.release-info.outputs.release_tag }}
+            <b>Tag:</b> ${{ steps.release-info.outputs.release_tag }}
 
-              <a href=\"https://github.com/${{ github.repository }}/releases/tag/${{ steps.release-info.outputs.release_tag }}\">View Release</a>"
+            <a href=\"https://github.com/${{ github.repository }}/releases/tag/${{ steps.release-info.outputs.release_tag }}\">View Release</a>"
+              ;;
+            "create")
+              REF_TYPE="${{ steps.branch-info.outputs.ref_type }}"
+              if [ "$REF_TYPE" = "branch" ]; then
+                MESSAGE |
+                "<b>Branch created by:</b> ${{ github.actor }}
+                <b>[${{ github.repository }}]</b> New branch created
+
+                <b>Branch:</b> ${{ steps.trimRef.outputs.shortRef }}
+
+                <a href=\"https://github.com/${{ github.repository }}/tree/${{ steps.trimRef.outputs.shortRef }}\">View Branch</a>"
+              else
+                MESSAGE="<b>Tag created by:</b> ${{ github.actor }}
+                <b>[${{ github.repository }}]</b> New tag created
+
+                <b>Tag:</b> ${{ steps.trimRef.outputs.shortRef }}
+
+                <a href=\"https://github.com/${{ github.repository }}/releases/tag/${{ steps.trimRef.outputs.shortRef }}\">View Tag</a>"
+              fi
+              ;;
+            "delete")
+              REF_TYPE="${{ steps.branch-info.outputs.ref_type }}"
+              if [ "$REF_TYPE" = "branch" ]; then
+                MESSAGE |
+                "<b>Branch deleted by:</b> ${{ github.actor }}
+                <b>[${{ github.repository }}]</b> Branch deleted
+
+                <b>Branch:</b> ${{ steps.trimRef.outputs.shortRef }}"
+              else
+                MESSAGE |
+                "<b>Tag deleted by:</b> ${{ github.actor }}
+                <b>[${{ github.repository }}]</b> Tag deleted
+
+                <b>Tag:</b> ${{ steps.trimRef.outputs.shortRef }}"
+              fi
               ;;
           esac
           
