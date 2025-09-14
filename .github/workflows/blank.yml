@@ -6,10 +6,15 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: notification
-        if: cancelled() == false
-        uses: xinthink/action-telegram@v1.1
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
         with:
-          botToken: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          chatId: ${{ secrets.TELEGRAM_CHAT_ID }}:6
-          jobStatus: ${{ job.status }}
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          thread_id: ${{ secrets.TELEGRAM_THREAD }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            > Pushed by: ${{ github.actor }}
+            Repository: ${{ github.repository }}:(branch) New commit
+            
+            ${{ github.sha }} | ${{ github.event.commits[0].message }}
+            (url commit: https://github.com/${{ github.repository }}/commit/${{github.sha}}
