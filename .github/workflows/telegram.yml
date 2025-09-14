@@ -73,10 +73,10 @@ jobs:
           case "${{ github.event_name }}" in
             "push")
               MESSAGE |
-              <b>> Pushed by:</b> ${{ github.actor }}
+              "<b>Pushed by:</b> ${{ github.actor }}
               <b>[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</b> New commit
 
-              <a href=\"https://github.com/${{ github.repository }}/commit/${{github.sha}}\">${{ steps.trimSha.outputs.shortSha }}</a> | ${{ github.event.commits[0].message }}
+              <a href=\"https://github.com/${{ github.repository }}/commit/${{github.sha}}\">${{ steps.trimSha.outputs.shortSha }}</a> | ${{ github.event.commits[0].message }}"
               ;;
             "pull_request")
               ACTION_TEXT=""
