@@ -116,8 +116,8 @@ jobs:
           echo "message=$MESSAGE" >> $GITHUB_OUTPUT
           echo "Debug: Message prepared: $MESSAGE"
 
-      - name: Install jq for URL encoding
-        run: sudo apt-get update && sudo apt-get install -y jq
+      #- name: Install jq for URL encoding
+        #run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Send Telegram notification via API
         run: |
