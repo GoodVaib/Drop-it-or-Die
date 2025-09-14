@@ -10,25 +10,25 @@ jobs:
         id: trimSha
         run: |
           SHORT_SHA="${{ github.sha }}"
-           echo "shortSha=${SHORT_SHA:0:7}" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=${SHORT_SHA:0:7}" >> $GITHUB_OUTPUT
 
       - name: Extract last part from URL
         id: trimRef
         run: |
           REF=${{ github.ref }}
           SHORT_REF=$(basename "$REF")
-          echo "shortRef=$SHORT_REF" >> $GITHUB_OUTPUT
+          echo "SHORT_REF=$SHORT_REF" >> $GITHUB_OUTPUT
           
       - name: send telegram message on push
-        uses: appleboy/telegram-action@master
+        uses: dawidd6/action-telegram@v1
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           message_thread_id: 6
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          format: html
+          parse_mode: HTML
           disable_web_page_preview: true
           message: |
             <b>Pushed by:</b> <a href="https://github.com/${{ github.actor }}">${{ github.actor }}</a>
-            <b><a href="https://github.com/${{ github.repository }}">[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</a></b> New commit
+            <b><a href="https://github.com/${{ github.repository }}">[${{ github.repository }}:${{ steps.trimRef.outputs.SHORT_REF }}]</a></b> New commit
             
-            <blockquote><a href="https://github.com/${{ github.repository }}/commit/${{github.sha}}">${{ steps.trimSha.outputs.shortSha }}</a> | ${{ github.event.commits[0].message }}</blockquote>
+            <blockquote><a href="https://github.com/${{ github.repository }}/commit/${{github.sha}}">${{ steps.trimSha.outputs.SHORT_SHA }}</a> | ${{ github.event.commits[0].message }}</blockquote>
