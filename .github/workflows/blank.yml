@@ -39,4 +39,4 @@ jobs:
             *Pushed by\\:* `${{ steps.escape.outputs.actor }}`
             *Repository\\:* `${{ steps.escape.outputs.repo }}` branch\\: New commit
             
-            [`${{ steps.trim-sha.outputs.short_sha }}`](https://github.com/${{ github.repository }}/commit/${{github.sha}}) \\| ${{ steps.escape.outputs.commit_msg }}
+            [`${{ steps.trim-sha.outputs.short_sha }}`](https://github.com/${{ github.repository }}/commit/${{github.sha}}) \| ${{ steps.escape.outputs.commit_msg }}
