@@ -7,13 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trim SHA to 7 characters
-        id: trim-sha
+        id: trimSha
         run: |
           SHORT_SHA="${{ github.sha }}"
           echo "::set-output name=short_sha::${SHORT_SHA:0:7}"
 
       - name: Extract last part from URL
-        id: trim-ref
+        id: trimRef
         run: |
           REF=${{ github.ref }}
           SHORT_REF=$(basename "$REF")
