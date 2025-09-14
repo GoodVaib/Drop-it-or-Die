@@ -22,4 +22,4 @@ jobs:
             Repository: ${{ github.repository }}:${{ commit.ref }} New commit
             
             ${{ steps.trim-sha.outputs.short_sha }} | ${{ github.event.commits[0].message }}
-            (url commit: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+            (https://github.com/${{ github.repository }}/commit/${{github.sha}}
