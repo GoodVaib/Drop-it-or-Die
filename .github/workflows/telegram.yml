@@ -42,7 +42,7 @@ jobs:
                                                  -e 's/}/\\}/g' \
                                                  -e 's/>/\\>/g' \
                                                  -e 's/</\\</g' \
-                                                 -e 's/~\\~/g' \
+                                                 -e 's/~/\\~/g' \
                                                  -e "s/'/\\'/g")
           echo "ESCAPED_MESSAGE=$ESCAPED_MESSAGE" >> $GITHUB_OUTPUT
           
