@@ -1,25 +1,115 @@
 name: telegram message
-on: [push]
-jobs:
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    types: [opened, closed, reopened]
+  release:
+    types: [published, edited]
 
-  build:
-    name: Build
+jobs:
+  telegram-notification:
+    name: Send Telegram Notification
     runs-on: ubuntu-latest
+    
+    # Определяем, какой тип события вызвал workflow
+    env:
+      EVENT_TYPE: ${{ github.event_name }}
+    
     steps:
       - name: Trim SHA to 7 characters
         id: trimSha
+        if: github.event_name == 'push'
         run: |
           SHORT_SHA="${{ github.sha }}"
-           echo "::set-output name=shortSha::${SHORT_SHA:0:7}"
+          echo "shortSha=${SHORT_SHA:0:7}" >> $GITHUB_OUTPUT
 
-      - name: Extract last part from URL
+      - name: Get PR info for pull_request events
+        id: pr-info
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "pr_title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+          echo "pr_action=${{ github.event.action }}" >> $GITHUB_OUTPUT
+          echo "pr_state=${{ github.event.pull_request.state }}" >> $GITHUB_OUTPUT
+
+      - name: Get release info
+        id: release-info
+        if: github.event_name == 'release'
+        run: |
+          echo "release_name=${{ github.event.release.name || github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          echo "release_tag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          echo "release_action=${{ github.event.action }}" >> $GITHUB_OUTPUT
+
+      - name: Extract branch/tag name
         id: trimRef
         run: |
-          REF=${{ github.ref }}
-          SHORT_REF=$(basename "$REF")
-          echo "::set-output name=shortRef::$SHORT_REF"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            REF="${{ github.ref }}"
+            SHORT_REF=$(basename "$REF")
+            echo "shortRef=$SHORT_REF" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "shortRef=${{ github.head_ref || github.event.pull_request.head.ref }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "release" ]; then
+            echo "shortRef=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Compose message based on event type
+        id: compose-message
+        run: |
+          case "${{ github.event_name }}" in
+            "push")
+              MESSAGE |
+              "<b>Pushed by:</b> ${{ github.actor }}
+              <b>[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</b> New commit
+
+              <a href=\"https://github.com/${{ github.repository }}/commit/${{github.sha}}\">${{ steps.trimSha.outputs.shortSha }}</a> | ${{ github.event.commits[0].message }}"
+              ;;
+            "pull_request")
+              ACTION_TEXT=""
+              case "${{ github.event.action }}" in
+                "opened") ACTION_TEXT="opened" ;;
+                "closed") 
+                  if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+                    ACTION_TEXT="merged"
+                  else
+                    ACTION_TEXT="closed"
+                  fi
+                  ;;
+                "reopened") ACTION_TEXT="reopened" ;;
+              esac
+              
+              MESSAGE |
+              "<b>Pull Request $ACTION_TEXT by:</b> ${{ github.actor }}
+              <b>[${{ github.repository }}]</b> PR #${{ steps.pr-info.outputs.pr_number }}
+
+              <b>Title:</b> ${{ steps.pr-info.outputs.pr_title }}
+              <b>Branch:</b> ${{ steps.trimRef.outputs.shortRef }}
+
+              <a href=\"https://github.com/${{ github.repository }}/pull/${{ steps.pr-info.outputs.pr_number }}\">View Pull Request</a>"
+              ;;
+            "release")
+              ACTION_TEXT=""
+              case "${{ github.event.action }}" in
+                "published") ACTION_TEXT="published" ;;
+                "edited") ACTION_TEXT="edited" ;;
+              esac
+              
+              MESSAGE |
+              "<b>Release $ACTION_TEXT by:</b> ${{ github.actor }}
+              <b>[${{ github.repository }}]</b> ${{ steps.release-info.outputs.release_name }}
+
+              <b>Tag:</b> ${{ steps.release-info.outputs.release_tag }}
+
+              <a href=\"https://github.com/${{ github.repository }}/releases/tag/${{ steps.release-info.outputs.release_tag }}\">View Release</a>"
+              ;;
+          esac
           
-      - name: send telegram message on push
+          # Escape newlines for output
+          MESSAGE="${MESSAGE//$'\n'/'%0A'}"
+          echo "message=$MESSAGE" >> $GITHUB_OUTPUT
+
+      - name: Send telegram message
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -27,8 +117,4 @@ jobs:
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           format: html
           disable_web_page_preview: true
-          message: |
-            <b>Pushed by:</b> ${{ github.actor }}
-            <b>[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</b> New commit
-            
-            <a href="https://github.com/${{ github.repository }}/commit/${{github.sha}}">${{ steps.trimSha.outputs.shortSha }}</a> | ${{ github.event.commits[0].message }}
+          message: ${{ steps.compose-message.outputs.message }}
