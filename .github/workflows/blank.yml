@@ -6,6 +6,11 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: Trim SHA to 7 characters
+        id: trim-sha
+        run: |
+          SHORT_SHA="${{ github.sha }}"
+          echo "::set-output name=short_sha::${SHORT_SHA:0:7}"
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
         with:
@@ -16,5 +21,5 @@ jobs:
             > Pushed by: ${{ github.actor }}
             Repository: ${{ github.repository }}:(branch) New commit
             
-            ${{ github.sha[:7] }} | ${{ github.event.commits[0].message }}
+            ${{ steps.trim-sha.outputs.short_sha }} | ${{ github.event.commits[0].message }}
             (url commit: https://github.com/${{ github.repository }}/commit/${{github.sha}}
