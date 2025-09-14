@@ -77,6 +77,7 @@ jobs:
               <b>[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</b> New commit
 
               <a href=\"https://github.com/${{ github.repository }}/commit/${{github.sha}}\">${{ steps.trimSha.outputs.shortSha }}</a> | ${{ github.event.commits[0].message }}
+              ;;
             "pull_request")
               ACTION_TEXT=""
               case "${{ github.event.action }}" in
@@ -111,9 +112,9 @@ jobs:
               "<b>Release $ACTION_TEXT by:</b> ${{ github.actor }}
               <b>[${{ github.repository }}]</b> ${{ steps.release-info.outputs.release_name }}
 
-            <b>Tag:</b> ${{ steps.release-info.outputs.release_tag }}
+              <b>Tag:</b> ${{ steps.release-info.outputs.release_tag }}
 
-            <a href=\"https://github.com/${{ github.repository }}/releases/tag/${{ steps.release-info.outputs.release_tag }}\">View Release</a>"
+              <a href=\"https://github.com/${{ github.repository }}/releases/tag/${{ steps.release-info.outputs.release_tag }}\">View Release</a>"
               ;;
             "create")
               REF_TYPE="${{ steps.branch-info.outputs.ref_type }}"
