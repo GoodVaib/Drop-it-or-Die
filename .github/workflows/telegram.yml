@@ -26,6 +26,7 @@ jobs:
           thread_id: ${{ secrets.TELEGRAM_THREAD }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           format: html
+          disable_web_page_preview: true
           message: |
             <b>Pushed by:</b> ${{ github.actor }}
             <b>[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</b> New commit
