@@ -17,8 +17,9 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           thread_id: ${{ secrets.TELEGRAM_THREAD }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdownv2
           message: |
-            > Pushed by: ${{ github.actor }}
-            Repository: ${{ github.repository }}:(branch) New commit
+            *Pushed by:* `${{ github.actor }}`
+            *Repository:* `${{ github.repository }}` branch: New commit
             
-            [${{ steps.trim-sha.outputs.short_sha }}](https://github.com/${{ github.repository }}/commit/${{github.sha}}) | ${{ github.event.commits[0].message }}
+            [`${{ steps.trim-sha.outputs.short_sha }}`](https://github.com/${{ github.repository }}/commit/${{github.sha}}) | ${{ github.event.commits[0].message }}
