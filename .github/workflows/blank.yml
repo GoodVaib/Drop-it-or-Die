@@ -19,7 +19,7 @@ jobs:
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           message: |
             > Pushed by: ${{ github.actor }}
-            Repository: ${{ github.repository }}:${{ commit.ref }} New commit
+            Repository: ${{ github.repository }}:${{ github.ref }} New commit
             
             ${{ steps.trim-sha.outputs.short_sha }} | ${{ github.event.commits[0].message }}
             (https://github.com/${{ github.repository }}/commit/${{github.sha}}
