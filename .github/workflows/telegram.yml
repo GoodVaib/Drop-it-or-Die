@@ -27,7 +27,8 @@ jobs:
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           format: html
           message: |
-            <b>Pushed by:</b> ${{ github.actor }}<br>
-            <b>[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</b> New commit<br><br>
-            <code>${{ steps.trimSha.outputs.shortSha }}</code> | ${{ github.event.commits[0].message }}<br>
+            <b>Pushed by:</b> ${{ github.actor }}
+            <b>[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</b> New commit
+            
+            <code>${{ steps.trimSha.outputs.shortSha }}</code> | ${{ github.event.commits[0].message }}
             <a href="https://github.com/${{ github.repository }}/commit/${{github.sha}}">View commit</a>
