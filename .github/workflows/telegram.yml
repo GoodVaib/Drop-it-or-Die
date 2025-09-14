@@ -20,15 +20,15 @@ jobs:
           echo "SHORT_REF=$SHORT_REF" >> $GITHUB_OUTPUT
           
       - name: send telegram message on push
-        uses: dawidd6/action-telegram@v1
+        uses: ilTelegrato/telegram-action@master
         with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
           message_thread_id: 6
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           parse_mode: HTML
           disable_web_page_preview: true
           message: |
             <b>Pushed by:</b> <a href="https://github.com/${{ github.actor }}">${{ github.actor }}</a>
-            <b><a href="https://github.com/${{ github.repository }}">[${{ github.repository }}:${{ steps.trimRef.outputs.SHORT_REF }}]</a></b> New commit
-            
+            <b><a href="https://github.com/${{ github.repository }}">[${{ github.repository }}:${{ steps.trimRef.outputs.SHORT_REF }}]</b> 1 New commit</a>
+      
             <blockquote><a href="https://github.com/${{ github.repository }}/commit/${{github.sha}}">${{ steps.trimSha.outputs.SHORT_SHA }}</a> | ${{ github.event.commits[0].message }}</blockquote>
