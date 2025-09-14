@@ -20,6 +20,6 @@ jobs:
           format: markdownv2
           message: |
             *Pushed by:* `${{ github.actor }}`
-            *Repository:* `${{ github.repository }}` branch: New commit
+            *Repository:* `${{ github.repository }}`:(branch) New commit
             
             [`${{ steps.trim-sha.outputs.short_sha }}`](https://github.com/${{ github.repository }}/commit/${{github.sha}}) \| ${{ formatCommitMessage(github.event.commits[0].message) }}
