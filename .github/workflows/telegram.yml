@@ -30,5 +30,4 @@ jobs:
             <b>Pushed by:</b> ${{ github.actor }}
             <b>[${{ github.repository }}:${{ steps.trimRef.outputs.shortRef }}]</b> New commit
             
-            <code>${{ steps.trimSha.outputs.shortSha }}</code> | ${{ github.event.commits[0].message }}
-            <a href="https://github.com/${{ github.repository }}/commit/${{github.sha}}">View commit</a>
+            <a href="https://github.com/${{ github.repository }}/commit/${{github.sha}}">${{ steps.trimSha.outputs.shortSha }}</a> | ${{ github.event.commits[0].message }}
