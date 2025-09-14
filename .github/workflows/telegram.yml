@@ -10,14 +10,14 @@ jobs:
         id: trimSha
         run: |
           SHORT_SHA="${{ github.sha }}"
-          echo "::set-output name=short_sha::${SHORT_SHA:0:7}"
+          echo "::set-output name=shortSha::${SHORT_SHA:0:7}"
 
       - name: Extract last part from URL
         id: trimRef
         run: |
           REF=${{ github.ref }}
           SHORT_REF=$(basename "$REF")
-          echo "::set-output name=short_ref::$SHORT_REF"
+          echo "::set-output name=shortRef::$SHORT_REF"
           
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
@@ -28,7 +28,7 @@ jobs:
           format: markdownv2
           message: |
             \> Pushed by\: ${{ github.actor }}
-            \[${{ github.repository }}\:${{ steps.trim-ref.outputs.short_ref }}\] New commit
+            \[${{ github.repository }}\:${{ steps.trimRef.outputs.shortRef }}\] New commit
             
-            ${{ steps.trim-sha.outputs.short_sha }} \| ${{ github.event.commits[0].message }}
+            ${{ steps.trimSha.outputs.shortSha }} \| ${{ github.event.commits[0].message }}
             \(https\://github\.com/${{ github.repository }}/commit/${{github.sha}}\)
