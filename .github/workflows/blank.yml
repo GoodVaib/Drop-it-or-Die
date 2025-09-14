@@ -1,8 +1,8 @@
-name: CI
+name: telegram action
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "yml-develop" ]
   pull_request:
     branches: [ "main" ]
     
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: notification
+      - name: Telegram notification
         if: cancelled() == false
         uses: xinthink/action-telegram@v1.1
         with:
