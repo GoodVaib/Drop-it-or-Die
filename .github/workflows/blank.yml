@@ -16,5 +16,5 @@ jobs:
             > Pushed by: ${{ github.actor }}
             Repository: ${{ github.repository }}:(branch) New commit
             
-            ${{ github.sha }} | ${{ github.event.commits[0].message }}
+            ${{ github.sha[:7] }} | ${{ github.event.commits[0].message }}
             (url commit: https://github.com/${{ github.repository }}/commit/${{github.sha}}
