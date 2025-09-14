@@ -1,7 +1,7 @@
 name: telegram message
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, yml-develop ]
   pull_request:
     types: [opened, closed, reopened]
   release:
