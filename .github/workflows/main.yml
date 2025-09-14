@@ -42,9 +42,9 @@ jobs:
               COMMIT_MSG=$(escape_markdown "${{ github.event.head_commit.message }}")
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.event.head_commit.id }}"
               MESSAGE="📝 New commit in *$ESCAPED_REPO*:*$ESCAPED_REF*"
-              MESSAGE+="\n\n💬 $COMMIT_MSG"
-              MESSAGE+="\n👤 by $ESCAPED_ACTOR"
-              MESSAGE+="\n🔗 [View commit]($COMMIT_URL)"
+              MESSAGE+="💬 $COMMIT_MSG\n\n"
+              MESSAGE+="👤 by $ESCAPED_ACTOR\n"
+              MESSAGE+="🔗 [View commit]($COMMIT_URL)"
             fi
           
           # CREATE event  
