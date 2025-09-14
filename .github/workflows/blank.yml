@@ -11,19 +11,24 @@ jobs:
         run: |
           SHORT_SHA="${{ github.sha }}"
           echo "::set-output name=short_sha::${SHORT_SHA:0:7}"
-      - name: Escape special characters for MarkdownV2
-        id: escape-chars
+      
+      - name: Escape all special characters for MarkdownV2
+        id: escape
         run: |
-          # Экранируем имя пользователя
-          ACTOR=$(echo "${{ github.actor }}" | sed 's/[_*\[\]()~`>#+\-=|{}.!]/\\&/g')
-          # Экранируем название репозитория
-          REPO=$(echo "${{ github.repository }}" | sed 's/[_*\[\]()~`>#+\-=|{}.!]/\\&/g')
-          # Экранируем сообщение коммита
-          COMMIT_MSG=$(echo "${{ github.event.commits[0].message }}" | sed 's/[_*\[\]()~`>#+\-=|{}.!]/\\&/g')
+          # Функция для экранирования спецсимволов MarkdownV2
+          escape_md_v2() {
+            echo "$1" | sed -e 's/\([_*\[\]()~`>#+\-=|{}.!]\)/\\\1/g'
+          }
           
-          echo "::set-output name=escaped_actor::${ACTOR}"
-          echo "::set-output name=escaped_repo::${REPO}"
-          echo "::set-output name=escaped_commit_msg::${COMMIT_MSG}"
+          # Экранируем все переменные
+          ESCAPED_ACTOR=$(escape_md_v2 "${{ github.actor }}")
+          ESCAPED_REPO=$(escape_md_v2 "${{ github.repository }}")
+          ESCAPED_COMMIT_MSG=$(escape_md_v2 "${{ github.event.commits[0].message }}")
+          
+          echo "::set-output name=actor::${ESCAPED_ACTOR}"
+          echo "::set-output name=repo::${ESCAPED_REPO}"
+          echo "::set-output name=commit_msg::${ESCAPED_COMMIT_MSG}"
+      
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
         with:
@@ -31,7 +36,7 @@ jobs:
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           format: markdownv2
           message: |
-            *Pushed by:* `${{ steps.escape-chars.outputs.escaped_actor }}`
-            *Repository:* `${{ steps.escape-chars.outputs.escaped_repo }}` branch: New commit
+            *Pushed by\\:* `${{ steps.escape.outputs.actor }}`
+            *Repository\\:* `${{ steps.escape.outputs.repo }}` branch\\: New commit
             
-            [`${{ steps.trim-sha.outputs.short_sha }}`](https://github.com/${{ github.repository }}/commit/${{github.sha}}) \\| ${{ steps.escape-chars.outputs.escaped_commit_msg }}
+            [`${{ steps.trim-sha.outputs.short_sha }}`](https://github.com/${{ github.repository }}/commit/${{github.sha}}) \\| ${{ steps.escape.outputs.commit_msg }}
