@@ -23,15 +23,19 @@ int main()
     Gui gui{window};
     
      
-    auto score_text = tgui::Label::create();
-    score_text->setText("Score: 0");
-    score_text->setPosition("50%", "40%");
-    score_text->setTextSize(18);
-    score_text->setOrigin(0.5, 0.5);
-    gui.add(score_text);
+    auto score_pl1_text = tgui::Label::create("Score: 0");
+    score_pl1_text->setPosition("2%", "2%");
+    score_pl1_text->setTextSize(18);
+    score_pl1_text->setOrigin(0, 0);
+    gui.add(score_pl1_text);
 
-    auto btn_tap = Button::create();
-    btn_tap->setText(L"Click me!");
+    auto score_pl2_text = tgui::Label::create("Score: 0");
+    score_pl2_text->setPosition("98%", "2%");
+    score_pl2_text->setTextSize(18);
+    score_pl2_text->setOrigin(1, 0);
+    gui.add(score_pl2_text);
+
+    auto btn_tap = Button::create("Click me!");
     btn_tap->setPosition("50%", "50%");
     btn_tap->setOrigin(0.5, 0.5);
     btn_tap->onPress([&]{
@@ -39,7 +43,7 @@ int main()
         score++;
         std::string text_label = "Score: ";
         text_label += std::to_string(score);
-        score_text->setText(text_label);
+        score_pl1_text->setText(text_label);
     });
     gui.add(btn_tap);
 
