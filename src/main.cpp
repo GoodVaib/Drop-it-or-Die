@@ -19,42 +19,60 @@ using namespace sf;
 
 
 // variables
-static short score_pl1_short, score_pl2_short, number_cube1_pl1, number_cube2_pl1, number_cube1_pl2, number_cube2_pl2;
+static short score_pl1_short = 0, score_pl2_short = 0, number_cube1_pl1, number_cube2_pl1, number_cube1_pl2, number_cube2_pl2;
+static string pl1_name = "pl1", pl2_name = "pl2";
 
+
+void game();
 
 // main func
-int main()
+int main() {
+    game();
+}
+
+void game()
 {
-    RenderWindow window{VideoMode{ {800, 600} }, "Drop it or Die"};
+    RenderWindow window{VideoMode{ {1024, 512} }, "Drop it or Die"};
     Gui gui{window};
-    
-    auto score_pl1_text = tgui::Label::create("Score: 0");
+
+    string text_label = "Score: ";
+
+    auto score_pl1_text = tgui::Label::create();
+    string full_text_pl1_score = "(" + pl1_name + ") score: " + to_string(score_pl1_short);
+    score_pl1_text->setText(full_text_pl1_score);
+
     score_pl1_text->getRenderer()->setTextColor(tgui::Color::White);
     score_pl1_text->getRenderer()->setFont("./fonts/Hero-Bold.ttf");
     score_pl1_text->setPosition("2%", "2%");
-    score_pl1_text->setTextSize(18);
+    score_pl1_text->setTextSize(16);
     score_pl1_text->setOrigin(0, 0);
     gui.add(score_pl1_text);
 
     auto score_pl2_text = tgui::Label::create("Score: 0");
+    string full_text_pl2_score = "(" + pl2_name + ") score: " + to_string(score_pl2_short);
+    score_pl2_text->setText(full_text_pl2_score);
+
     score_pl2_text->getRenderer()->setTextColor(tgui::Color::White);
     score_pl2_text->getRenderer()->setFont("./fonts/Hero-Bold.ttf");
     score_pl2_text->setPosition("98%", "2%");
-    score_pl2_text->setTextSize(18);
+    score_pl2_text->setTextSize(16);
     score_pl2_text->setOrigin(1, 0);
     gui.add(score_pl2_text);
 
     auto btn_tap = Button::create("Click me!");
-    //btn_tap->getRenderer()->setTextColor(tgui::Color::White);
+    btn_tap->getRenderer()->setTextColor({199, 199, 199});
     btn_tap->getRenderer()->setFont("./fonts/Hero-Bold.ttf");
+    btn_tap->getRenderer()->setBackgroundColor({0, 0, 0, 130});
+    btn_tap->getRenderer()->setBorderColorFocused({0, 0, 0});
+    btn_tap->setSize(150, 100);
+    btn_tap->setTextSize(28);
     btn_tap->setPosition("50%", "50%");
     btn_tap->setOrigin(0.5, 0.5);
     btn_tap->onPress([&]{
-        static long score = 0;
-        score++;
-        std::string text_label = "Score: ";
-        text_label += std::to_string(score);
-        score_pl1_text->setText(text_label);
+        score_pl1_short++;
+        string full_text;
+        full_text = "(" + pl1_name + ") score: " + to_string(score_pl1_short);
+        score_pl1_text->setText(full_text);
     });
     gui.add(btn_tap);
 
