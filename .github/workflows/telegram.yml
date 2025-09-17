@@ -1,5 +1,5 @@
 name: telegram message
-on: [push, release, pull_request, issues, issue_comment]
+on: [push, release, pull_request, issues, issue_comment, create, delete]
 jobs:
 
   build:
