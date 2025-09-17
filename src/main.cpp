@@ -33,54 +33,58 @@ int main() {
 void game()
 {
     RenderWindow window{VideoMode{ {1024, 512} }, "Drop it or Die"};
+    window.setFramerateLimit(60);
     Gui gui{window};
 
-    string text_label = "Score: ";
+    auto theme = tgui::Theme::create("./themes/theme.txt");
 
-    auto score_pl1_text = tgui::Label::create();
+    // pl1 score
+    auto score_pl1_text = tgui::Label::create(); gui.add(score_pl1_text);
     string full_text_pl1_score = "(" + pl1_name + ") score: " + to_string(score_pl1_short);
     score_pl1_text->setText(full_text_pl1_score);
 
     score_pl1_text->getRenderer()->setTextColor(tgui::Color::White);
     score_pl1_text->getRenderer()->setFont("./fonts/Hero-Bold.ttf");
-    score_pl1_text->setPosition("2%", "2%");
+    score_pl1_text->setPosition("1%", "2%");
     score_pl1_text->setTextSize(16);
     score_pl1_text->setOrigin(0, 0);
-    gui.add(score_pl1_text);
 
-    auto score_pl2_text = tgui::Label::create("Score: 0");
+    // pl2 score
+    auto score_pl2_text = tgui::Label::create("Score: 0"); gui.add(score_pl2_text);
     string full_text_pl2_score = "(" + pl2_name + ") score: " + to_string(score_pl2_short);
     score_pl2_text->setText(full_text_pl2_score);
 
-    score_pl2_text->getRenderer()->setTextColor(tgui::Color::White);
+    score_pl2_text->getRenderer()->setTextColor(tgui::Color::White); 
     score_pl2_text->getRenderer()->setFont("./fonts/Hero-Bold.ttf");
-    score_pl2_text->setPosition("98%", "2%");
+    score_pl2_text->setPosition("99%", "2%");
     score_pl2_text->setTextSize(16);
     score_pl2_text->setOrigin(1, 0);
-    gui.add(score_pl2_text);
 
-    auto btn_tap = Button::create("Click me!");
-    btn_tap->getRenderer()->setTextColor({199, 199, 199});
-    btn_tap->getRenderer()->setFont("./fonts/Hero-Bold.ttf");
-    btn_tap->getRenderer()->setBackgroundColor({0, 0, 0, 130});
-    btn_tap->getRenderer()->setBorderColorFocused({0, 0, 0});
-    btn_tap->setSize(150, 100);
+    // center button5
+    auto btn_tap = Button::create("Click me!"); gui.add(btn_tap);
+    btn_tap->setRenderer(theme->getRenderer("gd_button"));
+    btn_tap->setSize(150, 70);
     btn_tap->setTextSize(28);
-    btn_tap->setPosition("50%", "50%");
     btn_tap->setOrigin(0.5, 0.5);
+    btn_tap->setPosition("50%", "50%"); // center window - origin
+    
     btn_tap->onPress([&]{
         score_pl1_short++;
         string full_text;
         full_text = "(" + pl1_name + ") score: " + to_string(score_pl1_short);
         score_pl1_text->setText(full_text);
     });
-    gui.add(btn_tap);
+    
 
+
+    
+    
     while (window.isOpen())
     {
         while (const std::optional event = window.pollEvent()) {
             gui.handleEvent(*event);
             
+            // quit - close window
             if (event->is<sf::Event::Closed>())
                 window.close();
         }

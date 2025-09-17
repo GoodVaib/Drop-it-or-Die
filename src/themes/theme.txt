@@ -1,0 +1,17 @@
+Button {
+    TextColor = rgb(255, 255, 255);             // text
+    TextColorHover = rgb(255, 255, 255);        // text
+    TextColorDownHover = rgb(255, 255, 255);    // text
+    Font = "C:/Programs/.github/Drop-it-or-Die/src/fonts/Hero-Bold.ttf";   // Font
+}
+
+gd_button : Button {
+    BackgroundColor = rgba(20, 20, 20, 80);                 // background
+    BackgroundColorHover = rgba(100, 100, 100, 80);      // background
+    BackgroundColorDownHover = rgba(0, 0, 0, 80);     // background
+    BorderColor = rgba(0, 0, 0, 0);          // border
+    BorderColorHover = rgba(0, 0, 0, 0);     // border
+    BorderColorDownHover = rgba(0, 0, 0, 0); // border
+    BorderColorFocused = rgba(0, 0, 0, 0);   // border
+    RoundedBorderRadius = 10.f;        // border
+}
