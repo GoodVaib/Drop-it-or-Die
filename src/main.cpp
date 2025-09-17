@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -27,6 +29,7 @@ void game();
 
 // main func
 int main() {
+    srand(time(NULL));
     game();
 }
 
@@ -60,13 +63,29 @@ void game()
     score_pl2_text->setTextSize(16);
     score_pl2_text->setOrigin(1, 0);
 
-    // center button5
-    auto btn_tap = Button::create("Click me!"); gui.add(btn_tap);
+    // start button
+    auto start_btn = Button::create(); gui.add(start_btn);
+    start_btn->setSize(121, 42);
+    start_btn->setTextSize(31);
+    start_btn->setOrigin(0.5, 0.5);
+    start_btn->setPosition("50%", "50%"); // center window - origin (0.5,0.5)
+
+    start_btn->onPress([&]{
+        score_pl1_short++;
+        string full_text;
+        full_text = "(" + pl1_name + ") score: " + to_string(score_pl1_short);
+        score_pl1_text->setText(full_text);
+    });
+
+
+    // menu button
+    auto btn_tap = Button::create("Menu"); gui.add(btn_tap);
     btn_tap->setRenderer(theme->getRenderer("gd_button"));
-    btn_tap->setSize(150, 70);
-    btn_tap->setTextSize(28);
-    btn_tap->setOrigin(0.5, 0.5);
-    btn_tap->setPosition("50%", "50%"); // center window - origin
+    btn_tap->setSize(121, 42);
+    btn_tap->setTextSize(31);
+    btn_tap->setOrigin(0, 1);
+    btn_tap->setPosition("1%", "98%"); // left-down = origin (0,1)
+    btn_tap->setIgnoreMouseEvents(true);
     
     btn_tap->onPress([&]{
         score_pl1_short++;
