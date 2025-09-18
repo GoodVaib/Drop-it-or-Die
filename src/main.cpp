@@ -21,11 +21,16 @@ using namespace sf;
 
 
 // variables
-static short score_pl1_short = 0, score_pl2_short = 0, number_cube1_pl1, number_cube2_pl1, number_cube1_pl2, number_cube2_pl2;
+static short score_pl1_short = 0, score_pl2_short = 0, \
+number_cubes_pl1, number_cubes_pl2, \
+number_cube1_pl1, number_cube2_pl1, \
+number_cube1_pl2, number_cube2_pl2;
+
 static string pl1_name = "pl1", pl2_name = "pl2";
 
 
 void game();
+void rand_game();
 
 // main func
 int main() {
@@ -70,12 +75,7 @@ void game()
     start_btn->setOrigin(0.5, 0.5);
     start_btn->setPosition("50%", "50%"); // center window - origin (0.5,0.5)
 
-    start_btn->onPress([&]{
-        score_pl1_short++;
-        string full_text;
-        full_text = "(" + pl1_name + ") score: " + to_string(score_pl1_short);
-        score_pl1_text->setText(full_text);
-    });
+    start_btn->onPress(&rand_game);
 
 
     // menu button
@@ -94,9 +94,6 @@ void game()
         score_pl1_text->setText(full_text);
     });
     
-
-
-    
     
     while (window.isOpen())
     {
@@ -113,4 +110,28 @@ void game()
         gui.draw();
         window.display();
     }
+}
+
+
+void rand_game() {
+    number_cube1_pl1 = rand() % (6 - 1 + 1) + 1;
+    cout << "\n-------------- New Drop --------------\n" << "-------- pl1\n" << "number_cube1_pl1: " << number_cube1_pl1 << endl;
+    number_cube2_pl1 = rand() % (6 - 1 + 1) + 1;
+    cout << "number_cube2_pl1: " << number_cube2_pl1 << endl;
+
+    cout << "       =\n";
+    
+    number_cubes_pl1 = number_cube1_pl1 + number_cube2_pl1;
+    cout << "number_cubes_pl1: " << number_cubes_pl1 << endl << \
+    "-------- pl2\n";
+
+    number_cube1_pl2 = rand() % (6 - 1 + 1) + 1;
+    cout << "number_cube1_pl2: " << number_cube1_pl2 << endl;
+    number_cube2_pl2 = rand() % (6 - 1 + 1) + 1;
+    cout << "number_cube2_pl2: " << number_cube2_pl2 << endl;
+
+    cout << "       =\n";
+
+    number_cubes_pl2 = number_cube1_pl2 + number_cube2_pl2;
+    cout << "number_cubes_pl2: " << number_cubes_pl2 << endl;
 }
