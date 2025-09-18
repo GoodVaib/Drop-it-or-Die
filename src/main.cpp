@@ -44,7 +44,8 @@ void game()
     window.setFramerateLimit(60);
     Gui gui{window};
 
-    auto theme = tgui::Theme::create("./themes/theme.txt");
+    auto theme = tgui::Theme::create("./assets/themes/theme.txt");
+    auto font = "./assets/fonts/Hero-Bold.ttf";
 
     // pl1 score
     auto score_pl1_text = tgui::Label::create(); gui.add(score_pl1_text);
@@ -52,7 +53,7 @@ void game()
     score_pl1_text->setText(full_text_pl1_score);
 
     score_pl1_text->getRenderer()->setTextColor(tgui::Color::White);
-    score_pl1_text->getRenderer()->setFont("./fonts/Hero-Bold.ttf");
+    score_pl1_text->getRenderer()->setFont(font);
     score_pl1_text->setPosition("1%", "2%");
     score_pl1_text->setTextSize(16);
     score_pl1_text->setOrigin(0, 0);
@@ -63,7 +64,7 @@ void game()
     score_pl2_text->setText(full_text_pl2_score);
 
     score_pl2_text->getRenderer()->setTextColor(tgui::Color::White); 
-    score_pl2_text->getRenderer()->setFont("./fonts/Hero-Bold.ttf");
+    score_pl2_text->getRenderer()->setFont(font);
     score_pl2_text->setPosition("99%", "2%");
     score_pl2_text->setTextSize(16);
     score_pl2_text->setOrigin(1, 0);

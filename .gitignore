@@ -14,7 +14,6 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-# *.dll
 
 # Fortran module files
 *.mod
@@ -35,4 +34,3 @@
 .vscode
 
 *.fb
-python_server
