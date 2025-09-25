@@ -2,9 +2,9 @@ name: Telegram Default Notifications
 on:
   push:
     branches-ignore: 
-      - '**'
+      - '**'  # Игнорируем все пуши в ветки
     tags-ignore:
-      - '**'
+      - '**'  # Игнорируем все пуши в теги
   release:
   pull_request:
   issues:
@@ -15,10 +15,6 @@ jobs:
   notify:
     name: Default Notification
     runs-on: ubuntu-latest
-    # Добавляем условие, чтобы исключить создание веток/тегов
-    if: |
-      github.event_name != 'push' || 
-      (github.event_name == 'push' && github.event.created == false)
     steps:
       - name: Notify via EverythingSuckz Action
         uses: EverythingSuckz/github-telegram-notify@main
