@@ -1,5 +1,6 @@
 name: Telegram Create Notifications
-on: [create]  # ТОЛЬКО create события
+on:
+  create:
 
 jobs:
   notify:
@@ -8,6 +9,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          
+      - name: Install dependencies
+        run: pip install requests
         
       - name: Custom create notification
         run: python .github/scripts/telegram_notify.py
