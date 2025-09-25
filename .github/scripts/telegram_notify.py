@@ -33,23 +33,24 @@ def main():
     sender_name = event_data['sender']['login']
     sender_url = event_data['sender']['html_url']
     
+    message = None
+    
     if event_type == 'branch':
-        message = f"""🔨 **[[{repo_name}]({repo_url})] New branch created: [`[{ref_name}]({repo_url}/tree/{ref_name})`] by {sender_name}**"""
+        message = f"""🔨 **[[{repo_name}]({repo_url})] New branch created: [`{ref_name}`]({repo_url}/tree/{ref_name}) by [{sender_name}]({sender_url})**"""
     
     elif event_type == 'tag':
-        message = f"""🔨 **[[{repo_name}]({repo_url})] New tag created: [{ref_name}]({repo_url}/releases/tag/{ref_name}) by {sender_name}**"""
+        message = f"""🔨 **[[{repo_name}]({repo_url})] New tag created: [{ref_name}]({repo_url}/releases/tag/{ref_name}) by [{sender_name}]({sender_url})**"""
     
+    # Добавляем обработку для других типов событий create
     else:
-        # На всякий случай, если будет другой тип
-        message = f"""📌 **Создан новый объект**
-
-📁 Репозиторий: [{repo_name}]({repo_url})
-📌 Тип: `{event_type}`
-🔖 Имя: `{ref_name}`
-👤 Автор: [{sender_name}]({sender_url})"""
+        print(f"Unhandled create event type: {event_type}")
+        return
     
-    result = send_telegram_message(message)
-    print("Message sent:", result)
+    if message:
+        result = send_telegram_message(message)
+        print(f"Message sent: {result}")
+    else:
+        print("No message to send")
 
 if __name__ == '__main__':
     main()
