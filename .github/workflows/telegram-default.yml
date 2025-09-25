@@ -1,15 +1,5 @@
 name: Telegram Default Notifications
-on:
-  push:
-    branches-ignore: 
-      - '**'  # Игнорируем все пуши в ветки
-    tags-ignore:
-      - '**'  # Игнорируем все пуши в теги
-  release:
-  pull_request:
-  issues:
-  issue_comment:
-  delete:
+on: [push, release, pull_request, issues, issue_comment, delete]
 
 jobs:
   notify:
