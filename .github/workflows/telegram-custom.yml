@@ -1,11 +1,11 @@
 name: Telegram Create Notifications
-on:
-  create:
+on: [push, release, pull_request, issues, issue_comment, create]
 
 jobs:
-  notify:
+  create-notify:
     name: Custom Create Notification
     runs-on: ubuntu-latest
+    if: github.event_name == 'create'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -24,3 +24,15 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
+
+  default-notify:
+    name: Default Notification
+    runs-on: ubuntu-latest
+    if: github.event_name != 'create'
+    steps:
+      - name: Notify via EverythingSuckz Action
+        uses: EverythingSuckz/github-telegram-notify@main
+        with:
+          bot_token: '${{ secrets.TELEGRAM_BOT_TOKEN }}'
+          chat_id: '${{ secrets.TELEGRAM_CHAT_ID }}'
+          topic_id: 6
