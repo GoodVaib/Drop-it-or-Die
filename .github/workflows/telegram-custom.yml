@@ -28,7 +28,7 @@ jobs:
   default-notify:
     name: Default Notification
     runs-on: ubuntu-latest
-    if: github.event_name != 'create'
+    if: github.event_name != 'create' && github.event_name != 'push'
     steps:
       - name: Notify via EverythingSuckz Action
         uses: EverythingSuckz/github-telegram-notify@main
