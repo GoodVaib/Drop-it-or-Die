@@ -36,10 +36,10 @@ def main():
     message = None
     
     if event_type == 'branch':
-        message = f"""🔨 **[[{repo_name}]({repo_url})] New branch created: [`{ref_name}`]({repo_url}/tree/{ref_name}) by [{sender_name}]({sender_url})**"""
+        message = f"""🔨 **[[{repo_name}]({repo_url})] New branch created: [`{ref_name}`]({repo_url}/tree/{ref_name}) by {sender_name}**"""
     
     elif event_type == 'tag':
-        message = f"""🔨 **[[{repo_name}]({repo_url})] New tag created: [{ref_name}]({repo_url}/releases/tag/{ref_name}) by [{sender_name}]({sender_url})**"""
+        message = f"""🔨 **[[{repo_name}]({repo_url})] New tag created: [{ref_name}]({repo_url}/releases/tag/{ref_name}) by {sender_name}**"""
     
     # Добавляем обработку для других типов событий create
     else:
@@ -54,3 +54,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
