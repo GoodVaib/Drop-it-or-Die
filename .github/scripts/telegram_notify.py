@@ -53,9 +53,10 @@ def main():
     
     if message:
         print(f"Sending message: {message}")
-        result = send_telegram_message_html(message)
+        result = send_telegram_message(message)
         print(f"Telegram API response: {result}")
 
 if __name__ == '__main__':
     main()
+
 
