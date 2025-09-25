@@ -5,6 +5,11 @@ jobs:
   notify:
     name: Default Notification
     runs-on: ubuntu-latest
+    # Добавляем условие для фильтрации событий
+    if: |
+      github.event_name != 'delete' &&
+      !(github.event_name == 'push' && github.event.created) &&
+      !(github.event_name == 'push' && github.event.deleted)
     steps:
       - name: Notify via EverythingSuckz Action
         uses: EverythingSuckz/github-telegram-notify@main
