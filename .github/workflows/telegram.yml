@@ -2,13 +2,28 @@ name: telegram message
 on: [push, release, pull_request, issues, issue_comment, create, delete]
 jobs:
 
-  build:
-    name: Build
+  default-notify:
+    name: Default Notification
     runs-on: ubuntu-latest
+    if: github.event_name != 'create'  # Исключаем create события
     steps:
         - name: Notify the commit on Telegram
           uses: EverythingSuckz/github-telegram-notify@main
           with:
+            bot_token: '${{ secrets.TELEGRAM_BOT_TOKEN }}'
+            chat_id: '${{ secrets.TELEGRAM_CHAT_ID }}'
+            topic_id: 6
+  custom-notify:
+    name: Custom Notification
+    runs-on: ubuntu-latest
+    if: github.event_name == 'create'  # Только для create событий
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+          
+        - name: Notify the commit on Telegram
+          run: python .github/scripts/telegram_notify.py
+          env:
             bot_token: '${{ secrets.TELEGRAM_BOT_TOKEN }}'
             chat_id: '${{ secrets.TELEGRAM_CHAT_ID }}'
             topic_id: 6
