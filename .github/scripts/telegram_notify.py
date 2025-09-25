@@ -4,7 +4,7 @@ import json
 import requests
 import html
 
-def send_telegram_message_html(html_message):
+def send_telegram_message(message, parse_mode='HTML'):
     bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
     chat_id = os.getenv('TELEGRAM_CHAT_ID')
     topic_id = 6
@@ -13,8 +13,8 @@ def send_telegram_message_html(html_message):
     payload = {
         'chat_id': chat_id,
         'message_thread_id': topic_id,
-        'text': html_message,
-        'parse_mode': 'HTML',
+        'text': message,
+        'parse_mode': parse_mode,
         'disable_web_page_preview': True
     }
     
@@ -58,3 +58,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
