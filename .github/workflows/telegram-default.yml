@@ -1,0 +1,14 @@
+name: Telegram Default Notifications
+on: [push, release, pull_request, issues, issue_comment, delete]  # БЕЗ create
+
+jobs:
+  notify:
+    name: Default Notification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify via EverythingSuckz Action
+        uses: EverythingSuckz/github-telegram-notify@main
+        with:
+          bot_token: '${{ secrets.TELEGRAM_BOT_TOKEN }}'
+          chat_id: '${{ secrets.TELEGRAM_CHAT_ID }}'
+          topic_id: 6
